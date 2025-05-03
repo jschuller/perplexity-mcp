@@ -1,9 +1,5 @@
 #!/usr/bin/env node
 
-// This file is the entry point for UVX
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-
 // Check if PERPLEXITY_API_KEY is set
 if (!process.env.PERPLEXITY_API_KEY) {
   console.error('\x1b[31mError: PERPLEXITY_API_KEY environment variable is required\x1b[0m');
@@ -12,7 +8,7 @@ if (!process.env.PERPLEXITY_API_KEY) {
 {
   "mcpServers": {
     "perplexity-mcp": {
-      "command": "uvx",
+      "command": "npx",
       "args": [
         "@jschuller/perplexity-mcp"
       ],
@@ -27,4 +23,10 @@ if (!process.env.PERPLEXITY_API_KEY) {
 }
 
 // Import and run the MCP server
-import './dist/index.js';
+import('./dist/index.js').catch(err => {
+  console.error('\x1b[31mError loading the MCP server:\x1b[0m', err);
+  console.error('\x1b[33mIf this is related to TypeScript compilation, try installing the package with:\x1b[0m');
+  console.error('\x1b[36mnpm install -g typescript\x1b[0m');
+  console.error('\x1b[36mnpm install -g @jschuller/perplexity-mcp\x1b[0m');
+  process.exit(1);
+});
