@@ -141,6 +141,10 @@ I'd like to research quantum computing breakthroughs using perplexity_search_web
 - max_tokens: 1000
 ```
 
+## Implementation Details
+
+This package implements the Model Context Protocol (MCP) for the Perplexity API, making it compatible with Claude Desktop and Roo Code. It provides a JSON-RPC compatible interface that follows the MCP specification, allowing Claude to access Perplexity's web search capabilities with enhanced parameters for Deep Research.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -151,24 +155,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## Publishing the Package
-
-If you've made modifications and want to publish your own version:
-
-1. Update package.json with your package name and version
-2. Build the package:
-   ```bash
-   npm run build
-   ```
-3. Publish to npm:
-   ```bash
-   npm publish
-   ```
-
 ## License
 
 MIT
 
 ## Credits
 
-Based on the Model Context Protocol by ppl-ai.
+Based on the Model Context Protocol specification.

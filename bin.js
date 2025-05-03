@@ -14,7 +14,7 @@ if (!process.env.PERPLEXITY_API_KEY) {
     "perplexity-mcp": {
       "command": "uvx",
       "args": [
-        "perplexity-mcp"
+        "@jschuller/perplexity-mcp"
       ],
       "env": {
         "PERPLEXITY_API_KEY": "your_perplexity_api_key_here"
@@ -28,6 +28,3 @@ if (!process.env.PERPLEXITY_API_KEY) {
 
 // Import and run the MCP server
 import './dist/index.js';
-
-console.log('\x1b[32mPerplexity MCP Server is running...\x1b[0m');
-console.log('\x1b[36mEnhanced Deep Research parameters are enabled!\x1b[0m');

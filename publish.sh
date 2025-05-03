@@ -19,20 +19,17 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Check if TypeScript is installed
+# Check for dependencies
 echo -e "${YELLOW}Checking dependencies...${NC}"
-if [ ! -d "node_modules/typescript" ]; then
-    echo -e "${YELLOW}TypeScript not found, installing dependencies...${NC}"
-    npm install
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to install dependencies. Please check your npm installation.${NC}"
-        exit 1
-    fi
+npm install
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to install dependencies. Please check your npm installation.${NC}"
+    exit 1
 fi
 
-# Build the package using npx directly
+# Build the package
 echo -e "${YELLOW}Building package before publishing...${NC}"
-npx tsc
+npm run build
 if [ $? -ne 0 ]; then
     echo -e "${RED}Build failed. Please fix the errors and try again.${NC}"
     exit 1
