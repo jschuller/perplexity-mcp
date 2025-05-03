@@ -1,0 +1,58 @@
+{
+  "name": "@jschuller/perplexity-mcp",
+  "version": "1.0.0",
+  "description": "Enhanced Perplexity MCP server with advanced Deep Research parameters for Claude Desktop and Roo Code",
+  "main": "dist/index.js",
+  "bin": {
+    "perplexity-mcp": "bin.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "ts-node --esm index.ts",
+    "build": "tsc",
+    "serve": "node dist/index.js",
+    "prepublishOnly": "npm run build",
+    "postinstall": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jschuller/perplexity-mcp.git"
+  },
+  "homepage": "https://github.com/jschuller/perplexity-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/jschuller/perplexity-mcp/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/mcp-server": "^2.0.0",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "perplexity",
+    "mcp",
+    "claude",
+    "api",
+    "search",
+    "research",
+    "uvx",
+    "roo-code"
+  ],
+  "author": "jschuller",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "bin.js",
+    "README.md"
+  ]
+}
