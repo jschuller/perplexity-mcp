@@ -12,6 +12,62 @@ if (!apiKey) {
   process.exit(1);
 }
 
+// Define interfaces for typing
+interface PerplexityRequest {
+  messages: Array<{
+    role: string;
+    content: string;
+  }>;
+  frequency_penalty?: number;
+  max_tokens?: number;
+  model?: string;
+  presence_penalty?: number;
+  return_citations?: boolean;
+  return_images?: boolean;
+  stream?: boolean;
+  temperature?: number;
+  top_k?: number;
+  top_p?: number;
+}
+
+interface PerplexityResponse {
+  id: string;
+  model: string;
+  choices: Array<{
+    message: {
+      role: string;
+      content: string;
+      citations?: any[];
+      images?: any[];
+    };
+    index: number;
+    finish_reason: string;
+  }>;
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
+interface JsonRpcRequest {
+  jsonrpc: string;
+  id: string | number;
+  method: string;
+  params: any;
+}
+
+interface JsonRpcResponse {
+  jsonrpc: string;
+  id: string | number;
+  result?: any;
+  error?: {
+    code: number;
+    message: string;
+    data?: any;
+  };
+}
+
 // Log server startup with enhanced output
 console.log('\x1b[34m====================================\x1b[0m');
 console.log('\x1b[32mPerplexity Deep Research MCP Server\x1b[0m');
@@ -28,11 +84,11 @@ const server = http.createServer(async (req, res) => {
     
     req.on('end', async () => {
       try {
-        const rpcRequest = JSON.parse(body);
+        const rpcRequest = JSON.parse(body) as JsonRpcRequest;
         
         // Handle ping method
         if (rpcRequest.method === 'ping') {
-          const response = {
+          const response: JsonRpcResponse = {
             jsonrpc: '2.0',
             id: rpcRequest.id,
             result: 'pong'
@@ -45,7 +101,7 @@ const server = http.createServer(async (req, res) => {
         
         // Handle list_tools method
         if (rpcRequest.method === 'list_tools') {
-          const response = {
+          const response: JsonRpcResponse = {
             jsonrpc: '2.0',
             id: rpcRequest.id,
             result: [
@@ -175,7 +231,7 @@ const server = http.createServer(async (req, res) => {
           ];
           
           // Build API request
-          const apiRequest: any = {
+          const apiRequest: PerplexityRequest = {
             messages: messages
           };
           
@@ -208,7 +264,7 @@ const server = http.createServer(async (req, res) => {
               const errorData = await response.text();
               console.error(`\x1b[31mPerplexity API error: ${response.status} ${response.statusText}\x1b[0m`, errorData);
               
-              const errorResponse = {
+              const errorResponse: JsonRpcResponse = {
                 jsonrpc: '2.0',
                 id: rpcRequest.id,
                 error: {
@@ -223,7 +279,7 @@ const server = http.createServer(async (req, res) => {
               return;
             }
             
-            const result = await response.json();
+            const result = await response.json() as PerplexityResponse;
             console.log('\x1b[32mReceived response from Perplexity API\x1b[0m');
             
             // Process and format the response to highlight citations if available
@@ -235,7 +291,7 @@ const server = http.createServer(async (req, res) => {
             }
             
             // Format response for MCP
-            const mcpResponse = {
+            const mcpResponse: JsonRpcResponse = {
               jsonrpc: '2.0',
               id: rpcRequest.id,
               result: {
@@ -249,10 +305,10 @@ const server = http.createServer(async (req, res) => {
             
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(mcpResponse));
-          } catch (error) {
+          } catch (error: any) {
             console.error('\x1b[31mError in perplexity_search_web:\x1b[0m', error);
             
-            const errorResponse = {
+            const errorResponse: JsonRpcResponse = {
               jsonrpc: '2.0',
               id: rpcRequest.id,
               error: {
@@ -269,7 +325,7 @@ const server = http.createServer(async (req, res) => {
         }
         
         // Unsupported method
-        const errorResponse = {
+        const errorResponse: JsonRpcResponse = {
           jsonrpc: '2.0',
           id: rpcRequest.id,
           error: {
@@ -280,10 +336,10 @@ const server = http.createServer(async (req, res) => {
         
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(errorResponse));
-      } catch (error) {
+      } catch (error: any) {
         console.error('\x1b[31mError processing request:\x1b[0m', error);
         
-        const errorResponse = {
+        const errorResponse: JsonRpcResponse = {
           jsonrpc: '2.0',
           id: null,
           error: {
