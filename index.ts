@@ -59,7 +59,7 @@ interface JsonRpcRequest {
 
 interface JsonRpcResponse {
   jsonrpc: string;
-  id: string | number;
+  id: string | number | null;
   result?: any;
   error?: {
     code: number;
