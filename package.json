@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "start": "ts-node --esm index.ts",
-    "build": "tsc",
+    "build": "npx tsc",
     "serve": "node dist/index.js",
     "prepublishOnly": "npm run build",
     "postinstall": "npm run build"

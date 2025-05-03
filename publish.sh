@@ -19,14 +19,30 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Check if build directory exists
-if [ ! -d "dist" ]; then
-    echo -e "${YELLOW}Building package before publishing...${NC}"
-    npm run build
+# Check if TypeScript is installed
+echo -e "${YELLOW}Checking dependencies...${NC}"
+if [ ! -d "node_modules/typescript" ]; then
+    echo -e "${YELLOW}TypeScript not found, installing dependencies...${NC}"
+    npm install
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Build failed. Please fix the errors and try again.${NC}"
+        echo -e "${RED}Failed to install dependencies. Please check your npm installation.${NC}"
         exit 1
     fi
+fi
+
+# Build the package using npx directly
+echo -e "${YELLOW}Building package before publishing...${NC}"
+npx tsc
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Build failed. Please fix the errors and try again.${NC}"
+    exit 1
+fi
+
+# Check if dist directory was created
+if [ ! -d "dist" ]; then
+    echo -e "${RED}Build completed but dist directory was not created.${NC}"
+    echo -e "${YELLOW}Please check your tsconfig.json and try again.${NC}"
+    exit 1
 fi
 
 # Publish the package
