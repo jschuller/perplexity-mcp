@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import http from 'http';
 import net from 'net';
+import { stderr } from 'process';
 
 // Load environment variables from .env file if present
 dotenv.config();
@@ -9,7 +10,7 @@ dotenv.config();
 // Get API key from environment
 const apiKey = process.env.PERPLEXITY_API_KEY;
 if (!apiKey) {
-  console.error('Error: PERPLEXITY_API_KEY environment variable is required');
+  stderr.write('Error: PERPLEXITY_API_KEY environment variable is required\n');
   process.exit(1);
 }
 
@@ -69,19 +70,13 @@ interface JsonRpcResponse {
   };
 }
 
-// Only log to console if not being called through MCP
+// Only log to stderr and only when not in MCP mode
 const isMCP = process.env.MCP_MODE === 'true';
-function log(message: string) {
+function debugLog(message: string) {
   if (!isMCP) {
-    console.log(message);
+    stderr.write(`${message}\n`);
   }
 }
-
-// Log server startup
-log('====================================');
-log('Perplexity Deep Research MCP Server');
-log('====================================');
-log('Optimized for Claude Desktop & Roo Code');
 
 // Find an available port starting from the desired port
 async function findAvailablePort(startPort: number): Promise<number> {
@@ -103,10 +98,10 @@ async function findAvailablePort(startPort: number): Promise<number> {
         });
         server.listen(port);
       });
-      log(`Found available port: ${port}`);
+      debugLog(`Found available port: ${port}`);
       return port;
     } catch (err) {
-      log(`Port ${startPort} check error: ${err}`);
+      debugLog(`Port ${startPort} check error: ${err}`);
       continue;
     }
   }
@@ -115,9 +110,6 @@ async function findAvailablePort(startPort: number): Promise<number> {
 
 // Create a simple HTTP server to handle JSON-RPC requests
 async function startServer() {
-  // Set MCP mode to avoid console logging during MCP communication
-  process.env.MCP_MODE = 'true';
-  
   const server = http.createServer(async (req, res) => {
     if (req.method === 'POST' && req.url === '/') {
       let body = '';
@@ -128,6 +120,7 @@ async function startServer() {
       req.on('end', async () => {
         try {
           const rpcRequest = JSON.parse(body) as JsonRpcRequest;
+          debugLog(`Received RPC request: ${rpcRequest.method}`);
           
           // Handle ping method
           if (rpcRequest.method === 'ping') {
@@ -246,7 +239,7 @@ async function startServer() {
           
           // Handle perplexity_search_web method
           if (rpcRequest.method === 'perplexity_search_web') {
-            log('Processing search request...');
+            debugLog('Processing search request...');
             
             const params = rpcRequest.params;
             const { 
@@ -265,9 +258,9 @@ async function startServer() {
             } = params;
             
             // Log the request parameters for debugging
-            log(`Query: "${query}"`);
-            log(`Recency: ${recency}`);
-            if (model) log(`Model: ${model}`);
+            debugLog(`Query: "${query}"`);
+            debugLog(`Recency: ${recency}`);
+            if (model) debugLog(`Model: ${model}`);
             
             // Construct system message with recency instruction
             let systemContent = "You are a helpful assistant that searches the web to provide accurate, up-to-date information.";
@@ -305,7 +298,7 @@ async function startServer() {
             if (top_k !== undefined) apiRequest.top_k = top_k;
             if (top_p !== undefined) apiRequest.top_p = top_p;
             
-            log('Sending request to Perplexity API...');
+            debugLog('Sending request to Perplexity API...');
             
             try {
               // Make API call to Perplexity
@@ -320,7 +313,7 @@ async function startServer() {
               
               if (!response.ok) {
                 const errorData = await response.text();
-                log(`Perplexity API error: ${response.status} ${response.statusText} - ${errorData}`);
+                debugLog(`Perplexity API error: ${response.status} ${response.statusText} - ${errorData}`);
                 
                 const errorResponse: JsonRpcResponse = {
                   jsonrpc: '2.0',
@@ -338,14 +331,14 @@ async function startServer() {
               }
               
               const result = await response.json() as PerplexityResponse;
-              log('Received response from Perplexity API');
+              debugLog('Received response from Perplexity API');
               
               // Process and format the response to highlight citations if available
               let formattedResponse = result.choices[0].message.content;
               
               // Log token usage
               if (result.usage) {
-                log(`Token usage: ${result.usage.total_tokens} (${result.usage.prompt_tokens} prompt, ${result.usage.completion_tokens} completion)`);
+                debugLog(`Token usage: ${result.usage.total_tokens} (${result.usage.prompt_tokens} prompt, ${result.usage.completion_tokens} completion)`);
               }
               
               // Format response for MCP
@@ -364,7 +357,7 @@ async function startServer() {
               res.writeHead(200, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify(mcpResponse));
             } catch (error: any) {
-              log(`Error in perplexity_search_web: ${error.message}`);
+              debugLog(`Error in perplexity_search_web: ${error.message}`);
               
               const errorResponse: JsonRpcResponse = {
                 jsonrpc: '2.0',
@@ -395,7 +388,7 @@ async function startServer() {
           res.writeHead(404, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify(errorResponse));
         } catch (error: any) {
-          log(`Error processing request: ${error.message}`);
+          debugLog(`Error processing request: ${error.message}`);
           
           const errorResponse: JsonRpcResponse = {
             jsonrpc: '2.0',
@@ -421,14 +414,18 @@ async function startServer() {
 
   // Start the server on the available port
   server.listen(PORT, () => {
-    log(`Server running on port ${PORT}`);
-    log('Server ready for requests!');
-    log('====================================');
+    debugLog(`Server running on port ${PORT}`);
+    debugLog('Server ready for requests!');
   });
+}
+
+// Set MCP mode to avoid console logging during MCP communication
+if (!process.env.MCP_MODE) {
+  process.env.MCP_MODE = 'false'; 
 }
 
 // Start the server
 startServer().catch(err => {
-  console.error(`Failed to start server: ${err.message}`);
+  stderr.write(`Failed to start server: ${err.message}\n`);
   process.exit(1);
 });

@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
+// Set MCP mode for proper communication protocol
+process.env.MCP_MODE = 'true';
+
 // Check if PERPLEXITY_API_KEY is set
 if (!process.env.PERPLEXITY_API_KEY) {
-  console.error('\x1b[31mError: PERPLEXITY_API_KEY environment variable is required\x1b[0m');
-  console.log('\x1b[33mPlease set it in your environment or in claude_desktop_config.json:\x1b[0m');
-  console.log(`
+  process.stderr.write('Error: PERPLEXITY_API_KEY environment variable is required\n');
+  process.stderr.write('Please set it in your environment or in claude_desktop_config.json:\n');
+  process.stderr.write(`
 {
   "mcpServers": {
     "perplexity-mcp": {
@@ -24,9 +27,9 @@ if (!process.env.PERPLEXITY_API_KEY) {
 
 // Import and run the MCP server
 import('./dist/index.js').catch(err => {
-  console.error('\x1b[31mError loading the MCP server:\x1b[0m', err);
-  console.error('\x1b[33mIf this is related to TypeScript compilation, try installing the package with:\x1b[0m');
-  console.error('\x1b[36mnpm install -g typescript\x1b[0m');
-  console.error('\x1b[36mnpm install -g @jschuller/perplexity-mcp\x1b[0m');
+  process.stderr.write(`Error loading the MCP server: ${err.message}\n`);
+  process.stderr.write('If this is related to TypeScript compilation, try installing the package with:\n');
+  process.stderr.write('npm install -g typescript\n');
+  process.stderr.write('npm install -g @jschuller/perplexity-mcp\n');
   process.exit(1);
 });
