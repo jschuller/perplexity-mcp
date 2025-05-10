@@ -11,7 +11,7 @@ if (!apiKey) {
 }
 
 // Default model to use
-const defaultModel = process.env.PERPLEXITY_MODEL || 'sonar-large-online';
+const defaultModel = process.env.PERPLEXITY_MODEL || 'sonar';
 
 // Create the server instance
 const server = new Server(
@@ -58,7 +58,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             model: {
               type: 'string',
-              description: 'The name of the model to use for generating completions. Options include sonar-small-online, sonar-medium-online, and sonar-large-online.',
+              description: 'The name of the model to use for generating completions. Options include sonar, sonar-pro, and other models listed at https://docs.perplexity.ai/guides/model-cards',
               required: false
             },
             presence_penalty: {

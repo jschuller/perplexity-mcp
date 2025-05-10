@@ -90,7 +90,7 @@ Once configured, the MCP server provides a `perplexity_search_web` tool with the
 ## Environment Variables
 
 - `PERPLEXITY_API_KEY` (required): Your Perplexity API key
-- `PERPLEXITY_MODEL` (optional): Default model to use (default: 'sonar-large-online')
+- `PERPLEXITY_MODEL` (optional): Default model to use (default: 'sonar')
 
 ## Example Usage
 
@@ -110,9 +110,9 @@ The MCP server will automatically use the appropriate parameters to focus on rec
 
 ## Available Models
 
-- `sonar-small-online`: Fast, efficient model for quick searches
-- `sonar-medium-online`: Balanced model for general use
-- `sonar-large-online`: Most capable model for complex queries (default)
+- `sonar`: The standard Perplexity model (default)
+- `sonar-pro`: Enhanced model with better capabilities
+- Other models as listed at: https://docs.perplexity.ai/guides/model-cards
 
 ## Troubleshooting
 

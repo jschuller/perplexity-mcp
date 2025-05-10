@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.1] - 2025-05-10
+
+### Fixed
+- Updated default model from 'sonar-large-online' to 'sonar' to match current Perplexity API
+- Updated model descriptions in documentation to reflect available models
+
+### Changed
+- Improved error handling for invalid model names
+
 ## [2.0.0] - 2025-05-10
 
 ### Changed

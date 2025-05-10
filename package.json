@@ -1,6 +1,6 @@
 {
   "name": "@jschuller/perplexity-mcp",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Enhanced Perplexity MCP server with advanced Deep Research parameters for Claude Desktop and Roo Code",
   "main": "dist/index.js",
   "bin": {
