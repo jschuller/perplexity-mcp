@@ -1,78 +1,87 @@
-# Contributing to @jschuller/perplexity-mcp
+# Contributing to Perplexity MCP Server
 
-Thank you for considering contributing to the Perplexity MCP server for Deep Research! This document outlines the process for contributing to the project.
-
-## Code of Conduct
-
-Please be respectful and considerate of others when contributing to this project. We welcome contributions from everyone who wishes to improve the project.
-
-## How to Contribute
-
-### Reporting Bugs
-
-If you find a bug, please create an issue in the GitHub repository with the following information:
-
-1. A clear and descriptive title
-2. Steps to reproduce the issue
-3. Expected behavior
-4. Actual behavior
-5. Any relevant logs or error messages
-6. Your environment (OS, Node.js version, etc.)
-
-### Suggesting Enhancements
-
-If you have an idea for an enhancement, please create an issue with the following information:
-
-1. A clear and descriptive title
-2. A detailed description of the enhancement
-3. Why this enhancement would be useful
-4. Any potential implementation details you have in mind
-
-### Pull Requests
-
-1. Fork the repository
-2. Create a new branch for your feature or bugfix (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests if applicable
-5. Commit your changes with a descriptive commit message
-6. Push to your branch
-7. Submit a pull request
-
-#### Pull Request Guidelines
-
-- Keep your changes focused and relevant to the issue you're addressing
-- Write clear commit messages that explain the changes you're making
-- Update documentation as necessary
-- Make sure your code follows the existing style
-- If you're adding new functionality, include tests if applicable
+Thank you for your interest in contributing to the Perplexity MCP Server! This document provides guidelines for contributing to the project.
 
 ## Development Setup
 
-To set up the project for development:
+1. Fork and clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env` file from the example:
+   ```bash
+   cp .env.example .env
+   ```
+4. Add your Perplexity API key to the `.env` file
 
-1. Clone your fork of the repository
-2. Install dependencies: `npm install`
-3. Create a `.env` file with your Perplexity API key
-4. Run the development server: `npm start`
+## Project Structure
 
-## Testing
+```
+perplexity-mcp/
+├── src/
+│   └── index.ts      # Main server implementation
+├── dist/             # Compiled JavaScript (generated)
+├── bin.js           # Entry point for npx execution
+├── package.json     # Package configuration
+└── tsconfig.json    # TypeScript configuration
+```
 
-Before submitting a pull request, please test your changes with:
+## Development Commands
 
-- Different parameter combinations
-- Integration with Claude Desktop if applicable
-- Integration with Roo Code if applicable
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm start` - Run the server locally (for testing)
+- `npm publish` - Publish to npm (requires permissions)
 
-## Documentation
+## Testing Changes
 
-If you're adding new features or changing existing ones, please update the documentation accordingly, including:
+1. Build the project:
+   ```bash
+   npm run build
+   ```
 
-- README.md
-- Code comments
-- Any relevant examples
+2. Test locally:
+   ```bash
+   node bin.js
+   ```
+
+3. Test with Claude Desktop:
+   - Update your `claude_desktop_config.json` to point to your local build
+   - Restart Claude Desktop
+
+## Code Style
+
+- We use TypeScript for type safety
+- Follow the existing code style
+- Keep the code simple and readable
+- Document any new parameters or features
+
+## Pull Request Process
+
+1. Create a feature branch from `main`
+2. Make your changes
+3. Update the README.md if needed
+4. Bump the version in `package.json` following semantic versioning
+5. Create a Pull Request with a clear description of changes
+
+## Adding New Features
+
+When adding new Perplexity API parameters:
+
+1. Add the parameter to the tool's `inputSchema` in `src/index.ts`
+2. Add TypeScript types for the parameter
+3. Handle the parameter in the API request
+4. Update the README.md documentation
+5. Test thoroughly with different parameter combinations
+
+## Release Process
+
+1. Update version in `package.json`
+2. Update README.md if needed
+3. Build the project: `npm run build`
+4. Publish to npm: `npm publish`
+5. Create a GitHub release with changelog
 
 ## Questions?
 
-If you have any questions about contributing, please open an issue and we'll be happy to help!
-
-Thank you for helping improve the Perplexity MCP server for Deep Research!
+Feel free to open an issue for any questions or discussions about contributing.

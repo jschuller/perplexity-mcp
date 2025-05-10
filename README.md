@@ -1,164 +1,133 @@
-# Perplexity MCP Server for Deep Research
+# Perplexity MCP Server
 
-This is a Model Context Protocol (MCP) server for integrating Perplexity AI's web search capabilities with Claude Desktop and VSCode Roo Extension, optimized for Deep Research tasks.
-
-[![npm version](https://img.shields.io/npm/v/@jschuller/perplexity-mcp.svg)](https://www.npmjs.com/package/@jschuller/perplexity-mcp)
-[![GitHub repo](https://img.shields.io/badge/GitHub-Repository-blue.svg)](https://github.com/jschuller/perplexity-mcp)
+An enhanced MCP server for Perplexity AI that allows Claude Desktop and other MCP clients to search the web using Perplexity's powerful API. This server implements the full range of Perplexity API parameters, providing fine-grained control over search behavior and response generation.
 
 ## Features
 
-- Enhanced parameters for Deep Research tasks
-- Support for recency filtering (day, week, month, year)
-- Control over generation parameters (temperature, tokens, etc.)
-- Citation support
-- Optimized for research tasks
+- **Full Perplexity API support**: All parameters from the Perplexity API are exposed
+- **Recency filtering**: Focus on results from the last day, week, month, or year
+- **Advanced parameters**: Control temperature, top_k, top_p, frequency penalties, and more
+- **Citations and images**: Option to include source citations and relevant images
+- **Streaming support**: Enable incremental response streaming
+- **Model selection**: Choose between different Perplexity models
 
-## Setup
+## Installation
 
-### Prerequisites
+You can install this MCP server directly via npm/npx or from source:
 
-- Node.js (v18+)
-- npm or yarn
-- Perplexity API key
+### Option 1: Using npx (Recommended)
 
-### Installation
+```bash
+npx @jschuller/perplexity-mcp
+```
 
-#### Option 1: Install and Run Globally (Recommended for Claude Desktop)
-
-Install the package globally:
+### Option 2: Global Installation
 
 ```bash
 npm install -g @jschuller/perplexity-mcp
 ```
 
-Or use uvx directly without installation:
+### Option 3: From Source
 
 ```bash
-uvx @jschuller/perplexity-mcp
+git clone https://github.com/jschuller/perplexity-mcp.git
+cd perplexity-mcp
+npm install
+npm run build
 ```
 
-#### Option 2: Local Development
+## Configuration
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/jschuller/perplexity-mcp.git
-   cd perplexity-mcp
-   ```
+### Claude Desktop
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create a `.env` file based on `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Add your Perplexity API key to the `.env` file:
-   ```
-   PERPLEXITY_API_KEY=your_api_key_here
-   ```
-
-### Running the Server
-
-#### Using uvx (for Claude Desktop)
-
-Simply use uvx to run the package:
-
-```bash
-uvx @jschuller/perplexity-mcp
-```
-
-The PERPLEXITY_API_KEY environment variable must be set.
-
-#### Using Node.js (for development)
-
-```bash
-npm start
-```
-
-#### Using Docker
-
-Build the Docker image:
-
-```bash
-docker build -t @jschuller/perplexity-mcp .
-```
-
-Run the Docker container:
-
-```bash
-docker run -p 8000:8000 -e PERPLEXITY_API_KEY=your_api_key_here @jschuller/perplexity-mcp
-```
-
-### Integrating with Claude Desktop
-
-Add the following configuration to your `claude_desktop_config.json`:
+Add this configuration to your Claude Desktop `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "perplexity-mcp": {
-      "command": "uvx",
+      "command": "npx",
       "args": [
+        "-y",
         "@jschuller/perplexity-mcp"
       ],
       "env": {
-        "PERPLEXITY_API_KEY": "your_perplexity_api_key_here"
+        "PERPLEXITY_API_KEY": "your_perplexity_api_key_here",
+        "PERPLEXITY_MODEL": "sonar-large-online"
       }
     }
   }
 }
 ```
 
-## Available Parameters
-
-| Parameter | Description | Example Values |
-|-----------|-------------|----------------|
-| query | The search query to execute | "latest advances in quantum computing" |
-| recency | Filter results by time period | "day", "week", "month", "year" |
-| frequency_penalty | Penalty for token frequency to avoid repetition | 0.5, 1.0, 1.5 |
-| max_tokens | Maximum tokens to generate | 100, 500, 1000 |
-| model | Model name for generating completions | "sonar-small-online", "sonar-medium-online", "sonar-large-online" |
-| presence_penalty | Penalty based on token presence for topic variety | -2.0, 0.0, 2.0 |
-| return_citations | Include citations in response | true, false |
-| return_images | Include images in response | true, false |
-| stream | Stream response incrementally | true, false |
-| temperature | Control randomness (0 = deterministic) | 0.0, 0.7, 1.5 |
-| top_k | Limit high-probability tokens considered | 0, 40, 80 |
-| top_p | Nucleus sampling threshold | 0.1, 0.9, 1.0 |
-
-## Example Usage in Claude
-
+For macOS, the config file is located at:
 ```
-I'd like to research quantum computing breakthroughs using perplexity_search_web with:
-- query: "latest advances in quantum computing"
-- recency: "month"
-- model: "sonar-large-online"
-- temperature: 0.3
-- return_citations: true
-- max_tokens: 1000
+~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
-## Implementation Details
+## Usage
 
-This package implements the Model Context Protocol (MCP) for the Perplexity API, making it compatible with Claude Desktop and Roo Code. It provides a JSON-RPC compatible interface that follows the MCP specification, allowing Claude to access Perplexity's web search capabilities with enhanced parameters for Deep Research.
+Once configured, the MCP server provides a `perplexity_search_web` tool with the following parameters:
 
-## Contributing
+### Required Parameters
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+- `query` (string): The search query
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Optional Parameters
+
+- `recency` (string): Filter results by time period - 'day', 'week', 'month', 'year' (default: 'month')
+- `model` (string): The Perplexity model to use (default: 'sonar-large-online')
+- `frequency_penalty` (number): Penalty for token frequency to avoid repetition
+- `presence_penalty` (number): Penalty for token presence to encourage topic variety
+- `max_tokens` (integer): Maximum number of tokens to generate
+- `temperature` (number): Controls randomness (0 = deterministic, 2 = more random)
+- `top_k` (integer): Limits high-probability tokens to consider
+- `top_p` (number): Nucleus sampling threshold
+- `return_citations` (boolean): Include source citations (default: true)
+- `return_images` (boolean): Include relevant images (default: false)
+- `stream` (boolean): Enable streaming responses (default: false)
+
+## Environment Variables
+
+- `PERPLEXITY_API_KEY` (required): Your Perplexity API key
+- `PERPLEXITY_MODEL` (optional): Default model to use (default: 'sonar-large-online')
+
+## Example Usage
+
+In Claude Desktop, you can use commands like:
+
+```
+Search the web for the latest developments in quantum computing from the last week
+```
+
+The MCP server will automatically use the appropriate parameters to focus on recent results.
+
+## Security Considerations
+
+- Your Perplexity API key is kept secure in your local environment
+- The MCP server only communicates with the official Perplexity API
+- No data is stored or logged beyond what's necessary for the API calls
+
+## Available Models
+
+- `sonar-small-online`: Fast, efficient model for quick searches
+- `sonar-medium-online`: Balanced model for general use
+- `sonar-large-online`: Most capable model for complex queries (default)
+
+## Troubleshooting
+
+1. **API Key Issues**: Ensure your `PERPLEXITY_API_KEY` is correctly set in the configuration
+2. **Connection Errors**: Check your internet connection and Perplexity API status
+3. **MCP Server Not Found**: Make sure the package is properly installed and the command path is correct
 
 ## License
 
 MIT
 
-## Credits
+## Contributing
 
-Based on the Model Context Protocol specification.
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Support
+
+For issues or questions, please file an issue on [GitHub](https://github.com/jschuller/perplexity-mcp/issues).

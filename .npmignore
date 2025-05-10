@@ -1,0 +1,25 @@
+# Source files (we only need dist)
+src/
+*.ts
+
+# Config files not needed in package
+tsconfig.json
+tsconfig.tsbuildinfo
+.gitignore
+.npmignore
+
+# Git and documentation
+.git/
+.github/
+CONTRIBUTING.md
+.env.example
+
+# Development files
+node_modules/
+*.log
+.DS_Store
+
+# Test files
+test/
+*.test.js
+*.test.ts
