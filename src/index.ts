@@ -34,6 +34,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         name: 'perplexity_search_web',
         description: 'Search the web using Perplexity AI with recency filtering',
         inputSchema: {
+          $schema: 'https://json-schema.org/draft/2020-12/schema',
           type: 'object',
           properties: {
             query: {
@@ -48,56 +49,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             frequency_penalty: {
               type: 'number',
-              description: 'Multiplicative penalty for new tokens based on their frequency in the text to avoid repetition. Mutually exclusive with the presence_penalty parameter.',
-              required: false
+              description: 'Multiplicative penalty for new tokens based on their frequency in the text to avoid repetition. Mutually exclusive with the presence_penalty parameter.'
             },
             max_tokens: {
               type: 'integer',
-              description: 'The maximum number of tokens to generate. Sum of max_tokens and prompt tokens should not exceed the model\'s context window limit.',
-              required: false
+              description: 'The maximum number of tokens to generate. Sum of max_tokens and prompt tokens should not exceed the model\'s context window limit.'
             },
             model: {
               type: 'string',
-              description: 'The name of the model to use for generating completions. Options include sonar, sonar-pro, and other models listed at https://docs.perplexity.ai/guides/model-cards',
-              required: false
+              description: 'The name of the model to use for generating completions. Options include sonar, sonar-pro, and other models listed at https://docs.perplexity.ai/guides/model-cards'
             },
             presence_penalty: {
               type: 'number',
-              description: 'Penalty for new tokens based on their current presence in the text, encouraging topic variety. Mutually exclusive with the frequency_penalty parameter.',
-              required: false
+              description: 'Penalty for new tokens based on their current presence in the text, encouraging topic variety. Mutually exclusive with the frequency_penalty parameter.'
             },
             return_citations: {
               type: 'boolean',
               description: 'Whether to include citations in the model\'s response.',
-              default: true,
-              required: false
+              default: true
             },
             return_images: {
               type: 'boolean',
               description: 'Whether to include images in the model\'s response.',
-              default: false,
-              required: false
+              default: false
             },
             stream: {
               type: 'boolean',
               description: 'Whether to stream the response incrementally using server-sent events.',
-              default: false,
-              required: false
+              default: false
             },
             temperature: {
               type: 'number',
-              description: 'Controls generation randomness, with 0 being deterministic and values approaching 2 being more random.',
-              required: false
+              description: 'Controls generation randomness, with 0 being deterministic and values approaching 2 being more random.'
             },
             top_k: {
               type: 'integer',
-              description: 'Limits the number of high-probability tokens to consider for generation. Set to 0 to disable.',
-              required: false
+              description: 'Limits the number of high-probability tokens to consider for generation. Set to 0 to disable.'
             },
             top_p: {
               type: 'number',
-              description: 'Nucleus sampling threshold, controlling the token selection pool based on cumulative probability.',
-              required: false
+              description: 'Nucleus sampling threshold, controlling the token selection pool based on cumulative probability.'
             }
           },
           required: ['query']
