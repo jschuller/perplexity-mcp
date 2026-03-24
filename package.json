@@ -1,6 +1,6 @@
 {
   "name": "@jschuller/perplexity-mcp",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "MCP server for Perplexity AI — web search with recency filtering, citations, and model control for Claude Desktop and Claude Code",
   "main": "dist/index.js",
   "bin": {
