@@ -8,6 +8,7 @@
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933" alt="Node.js"></a>
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-SDK%201.x-5436DA" alt="MCP SDK"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="License"></a>
+  <a href="https://github.com/jschuller/perplexity-mcp/actions/workflows/ci.yml"><img src="https://github.com/jschuller/perplexity-mcp/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 </p>
 
 <p align="center">

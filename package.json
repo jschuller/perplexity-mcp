@@ -1,7 +1,7 @@
 {
   "name": "@jschuller/perplexity-mcp",
   "version": "2.1.0",
-  "description": "Enhanced Perplexity MCP server with advanced Deep Research parameters for Claude Desktop and Roo Code",
+  "description": "MCP server for Perplexity AI — web search with recency filtering, citations, and model control for Claude Desktop and Claude Code",
   "main": "dist/index.js",
   "bin": {
     "perplexity-mcp": "bin.js"
@@ -44,7 +44,8 @@
     "search",
     "research",
     "npx",
-    "roo-code"
+    "claude-code",
+    "claude-desktop"
   ],
   "author": "jschuller",
   "license": "MIT",
