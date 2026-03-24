@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.1.0] - 2026-03-24
+
+### Security
+- Upgraded `@modelcontextprotocol/sdk` from 0.5.0 to 1.27.1 — fixes ReDoS (GHSA-8r9q-7v3j-jr4g) and DNS rebinding (GHSA-w48q-cv73-mx4w) vulnerabilities
+- Added CI workflow with SHA-pinned GitHub Actions
+- Added Renovate for automated dependency maintenance
+- Added SECURITY.md with vulnerability disclosure process
+
+### Fixed
+- Fixed JSON Schema validation error with Claude Code (closes #1, merges #2) — removed invalid `required: false` on individual properties
+
+### Changed
+- Improved README with badges, Claude Code integration docs, tool reference table, and troubleshooting guide
+
 ## [2.0.1] - 2025-05-10
 
 ### Fixed

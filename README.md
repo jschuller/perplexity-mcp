@@ -1,133 +1,133 @@
-# Perplexity MCP Server
+<!-- mcp-server: perplexity | tools: 1 | transport: stdio | auth: api_key -->
 
-An enhanced MCP server for Perplexity AI that allows Claude Desktop and other MCP clients to search the web using Perplexity's powerful API. This server implements the full range of Perplexity API parameters, providing fine-grained control over search behavior and response generation.
+<h1 align="center">Perplexity MCP Server</h1>
 
-## Features
+<p align="center">
+  <a href="https://www.npmjs.com/package/@jschuller/perplexity-mcp"><img src="https://img.shields.io/npm/v/@jschuller/perplexity-mcp?color=CB3837&label=npm" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/@jschuller/perplexity-mcp"><img src="https://img.shields.io/npm/dm/@jschuller/perplexity-mcp?color=CB3837&label=downloads" alt="Downloads"></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-18+-339933" alt="Node.js"></a>
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-SDK%201.x-5436DA" alt="MCP SDK"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue" alt="License"></a>
+</p>
 
-- **Full Perplexity API support**: All parameters from the Perplexity API are exposed
-- **Recency filtering**: Focus on results from the last day, week, month, or year
-- **Advanced parameters**: Control temperature, top_k, top_p, frequency penalties, and more
-- **Citations and images**: Option to include source citations and relevant images
-- **Streaming support**: Enable incremental response streaming
-- **Model selection**: Choose between different Perplexity models
+<p align="center">
+  Search the web from Claude Desktop, Claude Code, or any MCP client using Perplexity AI —<br>
+  with fine-grained control over recency, citations, images, and model parameters.
+</p>
 
-## Installation
+---
 
-You can install this MCP server directly via npm/npx or from source:
+## What This Does
 
-### Option 1: Using npx (Recommended)
+This MCP server connects AI assistants to [Perplexity AI](https://www.perplexity.ai/)'s search API. Ask questions in natural language and get grounded, cited answers from the live web — directly inside Claude or any MCP-compatible client.
+
+**One tool, full control:** `perplexity_search_web` exposes the complete Perplexity API — recency filtering, model selection, temperature, top_k/top_p, citation/image toggles, and streaming.
+
+## Getting Started
+
+### 1. Get a Perplexity API Key
+
+Sign up at [perplexity.ai](https://www.perplexity.ai/) and generate an API key from your [account settings](https://www.perplexity.ai/settings/api).
+
+### 2. Install & Configure
+
+#### Claude Code (Recommended)
 
 ```bash
-npx @jschuller/perplexity-mcp
+claude mcp add perplexity -- npx -y @jschuller/perplexity-mcp
 ```
 
-### Option 2: Global Installation
-
+Then set your API key:
 ```bash
-npm install -g @jschuller/perplexity-mcp
+export PERPLEXITY_API_KEY=pplx-your-key-here
 ```
 
-### Option 3: From Source
+#### Claude Desktop
 
-```bash
-git clone https://github.com/jschuller/perplexity-mcp.git
-cd perplexity-mcp
-npm install
-npm run build
-```
-
-## Configuration
-
-### Claude Desktop
-
-Add this configuration to your Claude Desktop `claude_desktop_config.json`:
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "perplexity-mcp": {
+    "perplexity": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@jschuller/perplexity-mcp"
-      ],
+      "args": ["-y", "@jschuller/perplexity-mcp"],
       "env": {
-        "PERPLEXITY_API_KEY": "your_perplexity_api_key_here",
-        "PERPLEXITY_MODEL": "sonar-large-online"
+        "PERPLEXITY_API_KEY": "pplx-your-key-here"
       }
     }
   }
 }
 ```
 
-For macOS, the config file is located at:
+Config location:
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+#### From Source
+
+```bash
+git clone https://github.com/jschuller/perplexity-mcp.git
+cd perplexity-mcp
+npm install && npm run build
 ```
-~/Library/Application Support/Claude/claude_desktop_config.json
-```
 
-## Usage
+### 3. Verify
 
-Once configured, the MCP server provides a `perplexity_search_web` tool with the following parameters:
+Ask Claude: *"Search the web for the latest developments in quantum computing from the last week"*
 
-### Required Parameters
+## Tool Reference
 
-- `query` (string): The search query
+### `perplexity_search_web`
 
-### Optional Parameters
-
-- `recency` (string): Filter results by time period - 'day', 'week', 'month', 'year' (default: 'month')
-- `model` (string): The Perplexity model to use (default: 'sonar-large-online')
-- `frequency_penalty` (number): Penalty for token frequency to avoid repetition
-- `presence_penalty` (number): Penalty for token presence to encourage topic variety
-- `max_tokens` (integer): Maximum number of tokens to generate
-- `temperature` (number): Controls randomness (0 = deterministic, 2 = more random)
-- `top_k` (integer): Limits high-probability tokens to consider
-- `top_p` (number): Nucleus sampling threshold
-- `return_citations` (boolean): Include source citations (default: true)
-- `return_images` (boolean): Include relevant images (default: false)
-- `stream` (boolean): Enable streaming responses (default: false)
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| **`query`** | string | *(required)* | Search query |
+| `recency` | `day` \| `week` \| `month` \| `year` | `month` | Filter results by time period |
+| `model` | string | `sonar` | Perplexity model ([model cards](https://docs.perplexity.ai/guides/model-cards)) |
+| `temperature` | number | — | Randomness (0 = deterministic, 2 = creative) |
+| `max_tokens` | integer | — | Maximum tokens to generate |
+| `top_k` | integer | — | Limit high-probability token pool (0 = disable) |
+| `top_p` | number | — | Nucleus sampling threshold |
+| `frequency_penalty` | number | — | Penalize repeated tokens |
+| `presence_penalty` | number | — | Encourage topic variety |
+| `return_citations` | boolean | `true` | Include source citations |
+| `return_images` | boolean | `false` | Include relevant images |
+| `stream` | boolean | `false` | Stream response incrementally |
 
 ## Environment Variables
 
-- `PERPLEXITY_API_KEY` (required): Your Perplexity API key
-- `PERPLEXITY_MODEL` (optional): Default model to use (default: 'sonar')
-
-## Example Usage
-
-In Claude Desktop, you can use commands like:
-
-```
-Search the web for the latest developments in quantum computing from the last week
-```
-
-The MCP server will automatically use the appropriate parameters to focus on recent results.
-
-## Security Considerations
-
-- Your Perplexity API key is kept secure in your local environment
-- The MCP server only communicates with the official Perplexity API
-- No data is stored or logged beyond what's necessary for the API calls
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `PERPLEXITY_API_KEY` | Yes | — | Your Perplexity API key |
+| `PERPLEXITY_MODEL` | No | `sonar` | Default model for all queries |
 
 ## Available Models
 
-- `sonar`: The standard Perplexity model (default)
-- `sonar-pro`: Enhanced model with better capabilities
-- Other models as listed at: https://docs.perplexity.ai/guides/model-cards
+- **`sonar`** — Standard model (default)
+- **`sonar-pro`** — Enhanced capabilities
+- See full list: [Perplexity Model Cards](https://docs.perplexity.ai/guides/model-cards)
+
+## Security
+
+- API key stays in your local environment — never sent anywhere except the Perplexity API
+- The server communicates only with `api.perplexity.ai` over HTTPS
+- No data is stored or logged beyond the API request lifecycle
+- See [SECURITY.md](SECURITY.md) for vulnerability reporting
 
 ## Troubleshooting
 
-1. **API Key Issues**: Ensure your `PERPLEXITY_API_KEY` is correctly set in the configuration
-2. **Connection Errors**: Check your internet connection and Perplexity API status
-3. **MCP Server Not Found**: Make sure the package is properly installed and the command path is correct
+| Issue | Fix |
+|---|---|
+| `PERPLEXITY_API_KEY is required` | Set the env var in your MCP client config or shell |
+| `400 invalid_request_error` | Update to v2.1.0+ (fixes JSON Schema validation with Claude Code) |
+| Server not found | Verify `npx @jschuller/perplexity-mcp` runs without error |
+| Connection timeout | Check internet connectivity and [Perplexity API status](https://status.perplexity.ai/) |
+
+## Contributing
+
+Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
 MIT
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Support
-
-For issues or questions, please file an issue on [GitHub](https://github.com/jschuller/perplexity-mcp/issues).
