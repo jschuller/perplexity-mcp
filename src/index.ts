@@ -72,11 +72,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Whether to include images in the model\'s response.',
               default: false,
             },
-            stream: {
-              type: 'boolean',
-              description: 'Whether to stream the response incrementally using server-sent events.',
-              default: false,
-            },
             temperature: {
               type: 'number',
               description: 'Controls generation randomness, with 0 being deterministic and values approaching 2 being more random.',

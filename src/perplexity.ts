@@ -13,7 +13,6 @@ export interface SearchArgs {
   presence_penalty?: number;
   return_citations?: boolean;
   return_images?: boolean;
-  stream?: boolean;
   temperature?: number;
   top_k?: number;
   top_p?: number;
@@ -30,7 +29,6 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
     presence_penalty,
     return_citations = true,
     return_images = false,
-    stream = false,
     temperature,
     top_k,
     top_p
@@ -65,7 +63,6 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
   if (presence_penalty !== undefined) apiRequest.presence_penalty = presence_penalty;
   if (return_citations !== undefined) apiRequest.return_citations = return_citations;
   if (return_images !== undefined) apiRequest.return_images = return_images;
-  if (stream !== undefined) apiRequest.stream = stream;
   if (temperature !== undefined) apiRequest.temperature = temperature;
   if (top_k !== undefined) apiRequest.top_k = top_k;
   if (top_p !== undefined) apiRequest.top_p = top_p;

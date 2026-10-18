@@ -4,6 +4,7 @@
 
 ### Fixed
 - `recency` now sets Perplexity's `search_recency_filter` instead of adding a hint to the system prompt, and has no default: before, every query was nudged toward the last month. Accepts `hour`, `day`, `week`, `month`, `year`; other values are rejected
+- Removed the `stream` parameter. The server parsed the reply as one JSON body, so `stream: true` made the API return server-sent events and the call failed; an MCP tool result is returned whole anyway. `stream` is never sent to the API
 
 ## [2.1.0] - 2026-03-24
 

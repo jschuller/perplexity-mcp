@@ -22,7 +22,7 @@
 
 This MCP server connects AI assistants to [Perplexity AI](https://www.perplexity.ai/)'s search API. Ask questions in natural language and get grounded, cited answers from the live web — directly inside Claude or any MCP-compatible client.
 
-**One tool, full control:** `perplexity_search_web` exposes the complete Perplexity API — recency filtering, model selection, temperature, top_k/top_p, citation/image toggles, and streaming.
+**One tool, full control:** `perplexity_search_web` exposes the complete Perplexity API — recency filtering, model selection, temperature, top_k/top_p, and citation/image toggles.
 
 ## Getting Started
 
@@ -94,7 +94,6 @@ Ask Claude: *"Search the web for the latest developments in quantum computing fr
 | `presence_penalty` | number | — | Encourage topic variety |
 | `return_citations` | boolean | `true` | Include source citations |
 | `return_images` | boolean | `false` | Include relevant images |
-| `stream` | boolean | `false` | Stream response incrementally |
 
 ## Environment Variables
 
