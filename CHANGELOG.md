@@ -5,6 +5,9 @@
 ### Fixed
 - `recency` now sets Perplexity's `search_recency_filter` instead of adding a hint to the system prompt, and has no default: before, every query was nudged toward the last month. Accepts `hour`, `day`, `week`, `month`, `year`; other values are rejected
 - Removed the `stream` parameter. The server parsed the reply as one JSON body, so `stream: true` made the API return server-sent events and the call failed; an MCP tool result is returned whole anyway. `stream` is never sent to the API
+- Citations and images now reach the client. They were read from `choices[0].message`, where Perplexity does not put them, and returned under a non-standard `meta` key that clients ignore. The server now reads the top-level `citations` (falling back to `search_results`) and `images`, and appends a numbered `Sources:` list, and image URLs when `return_images` is set, to the text. The `meta` field is gone
+- `return_citations` is no longer sent to the API (Perplexity always returns sources); it controls whether the `Sources:` list is appended
+- A response without `choices[0].message.content` gives a clear error instead of a TypeError
 
 ## [2.1.0] - 2026-03-24
 

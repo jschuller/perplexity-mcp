@@ -64,12 +64,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             return_citations: {
               type: 'boolean',
-              description: 'Whether to include citations in the model\'s response.',
+              description: 'Whether to append the numbered source list the answer\'s [1], [2] markers refer to.',
               default: true,
             },
             return_images: {
               type: 'boolean',
-              description: 'Whether to include images in the model\'s response.',
+              description: 'Whether to request images and append their URLs to the answer.',
               default: false,
             },
             temperature: {
@@ -124,7 +124,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     
     const result = await response.json() as any;
 
-    return formatResponse(result, apiRequest.model);
+    return formatResponse(result, {
+      returnCitations: args.return_citations !== false,
+      returnImages: args.return_images === true
+    });
     
   } catch (error: any) {
     throw new Error(`Error in perplexity_search_web: ${error.message}`);

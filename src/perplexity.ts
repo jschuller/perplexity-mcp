@@ -27,7 +27,6 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
     max_tokens,
     model = defaultModel,
     presence_penalty,
-    return_citations = true,
     return_images = false,
     temperature,
     top_k,
@@ -61,7 +60,6 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
   if (frequency_penalty !== undefined) apiRequest.frequency_penalty = frequency_penalty;
   if (max_tokens !== undefined) apiRequest.max_tokens = max_tokens;
   if (presence_penalty !== undefined) apiRequest.presence_penalty = presence_penalty;
-  if (return_citations !== undefined) apiRequest.return_citations = return_citations;
   if (return_images !== undefined) apiRequest.return_images = return_images;
   if (temperature !== undefined) apiRequest.temperature = temperature;
   if (top_k !== undefined) apiRequest.top_k = top_k;
@@ -70,23 +68,59 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
   return apiRequest;
 }
 
-// Turn the API's JSON response into the tool result
-export function formatResponse(result: any, model: string) {
-  // Process and format the response
-  const formattedResponse = result.choices[0].message.content;
+export interface FormatOptions {
+  returnCitations: boolean;
+  returnImages: boolean;
+}
+
+// Sources the answer's [1], [2] markers refer to. Perplexity returns them at the
+// top level: `citations` (URLs) or `search_results` ({ title, url, ... }).
+function sources(result: any): string[] {
+  if (Array.isArray(result.citations) && result.citations.length > 0) {
+    return result.citations.filter((url: unknown) => typeof url === 'string');
+  }
+  if (Array.isArray(result.search_results)) {
+    return result.search_results
+      .filter((r: any) => r && typeof r.url === 'string')
+      .map((r: any) => (r.title ? `${r.title} - ${r.url}` : r.url));
+  }
+  return [];
+}
+
+// Image URLs from the top-level `images` array (objects with image_url, or plain URLs)
+function imageUrls(result: any): string[] {
+  if (!Array.isArray(result.images)) return [];
+  return result.images
+    .map((image: any) => (typeof image === 'string' ? image : image?.image_url))
+    .filter((url: unknown) => typeof url === 'string');
+}
+
+// Turn the API's JSON response into the tool result. Sources and images go into
+// the text itself, the only part of a tool result every MCP client shows.
+export function formatResponse(result: any, options: FormatOptions) {
+  const answer = result?.choices?.[0]?.message?.content;
+  if (typeof answer !== 'string') {
+    throw new Error('Unexpected Perplexity response: no choices[0].message.content');
+  }
+
+  let text = answer;
+
+  const sourceList = options.returnCitations ? sources(result) : [];
+  if (sourceList.length > 0) {
+    text += '\n\nSources:\n' + sourceList.map((source, i) => `[${i + 1}] ${source}`).join('\n');
+  }
+
+  const images = options.returnImages ? imageUrls(result) : [];
+  if (images.length > 0) {
+    text += '\n\nImages:\n' + images.map((url) => `- ${url}`).join('\n');
+  }
 
   return {
     content: [
       {
         type: 'text',
-        text: formattedResponse
+        text
       }
-    ],
-    meta: {
-      model: result.model || model,
-      usage: result.usage,
-      citations: result.choices[0].message.citations || [],
-      images: result.choices[0].message.images || []
-    }
+    ]
   };
 }

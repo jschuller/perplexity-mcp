@@ -92,8 +92,18 @@ Ask Claude: *"Search the web for the latest developments in quantum computing fr
 | `top_p` | number | — | Nucleus sampling threshold |
 | `frequency_penalty` | number | — | Penalize repeated tokens |
 | `presence_penalty` | number | — | Encourage topic variety |
-| `return_citations` | boolean | `true` | Include source citations |
-| `return_images` | boolean | `false` | Include relevant images |
+| `return_citations` | boolean | `true` | Append a `Sources:` list (the URLs behind the answer's `[1]`, `[2]` markers) |
+| `return_images` | boolean | `false` | Request images and append their URLs under `Images:` |
+
+The answer comes back as one text block, with the sources and image URLs appended:
+
+```
+<answer with [1], [2] markers>
+
+Sources:
+[1] https://example.com/article
+[2] https://example.org/report
+```
 
 ## Environment Variables
 
