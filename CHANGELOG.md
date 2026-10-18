@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- `recency` now sets Perplexity's `search_recency_filter` instead of adding a hint to the system prompt, and has no default: before, every query was nudged toward the last month. Accepts `hour`, `day`, `week`, `month`, `year`; other values are rejected
+
 ## [2.1.0] - 2026-03-24
 
 ### Security

@@ -84,7 +84,7 @@ Ask Claude: *"Search the web for the latest developments in quantum computing fr
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | **`query`** | string | *(required)* | Search query |
-| `recency` | `day` \| `week` \| `month` \| `year` | `month` | Filter results by time period |
+| `recency` | `hour` \| `day` \| `week` \| `month` \| `year` | — | Only search results from this period (sent as Perplexity's `search_recency_filter`); omit for no time limit |
 | `model` | string | `sonar` | Perplexity model ([model cards](https://docs.perplexity.ai/guides/model-cards)) |
 | `temperature` | number | — | Randomness (0 = deterministic, 2 = creative) |
 | `max_tokens` | integer | — | Maximum tokens to generate |

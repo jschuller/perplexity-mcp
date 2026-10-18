@@ -2,7 +2,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import fetch from 'node-fetch';
-import { buildRequest, formatResponse, SearchArgs } from './perplexity.js';
+import { buildRequest, formatResponse, RECENCY_VALUES, SearchArgs } from './perplexity.js';
 
 // Get API key from environment
 const apiKey = process.env.PERPLEXITY_API_KEY;
@@ -43,9 +43,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             recency: {
               type: 'string',
-              enum: ['day', 'week', 'month', 'year'],
-              default: 'month',
-              description: 'Filter results by recency'
+              enum: RECENCY_VALUES,
+              description: 'Only return search results from this time period (Perplexity search_recency_filter). Omit for no time limit.'
             },
             frequency_penalty: {
               type: 'number',

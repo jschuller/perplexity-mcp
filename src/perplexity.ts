@@ -1,6 +1,9 @@
 // Pure helpers for the perplexity_search_web tool: no I/O, so they can be tested
 // without an API key or network access.
 
+// Values Perplexity accepts for search_recency_filter
+export const RECENCY_VALUES = ['hour', 'day', 'week', 'month', 'year'];
+
 export interface SearchArgs {
   query: string;
   recency?: string;
@@ -20,7 +23,7 @@ export interface SearchArgs {
 export function buildRequest(args: SearchArgs, defaultModel: string): Record<string, any> {
   const {
     query,
-    recency = 'month',
+    recency,
     frequency_penalty,
     max_tokens,
     model = defaultModel,
@@ -33,18 +36,15 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
     top_p
   } = args;
 
-  // Construct system message with recency instruction
-  let systemContent = "You are a helpful assistant that searches the web to provide accurate, up-to-date information.";
-
-  if (recency) {
-    systemContent += ` Focus on results from the last ${recency}.`;
+  if (recency !== undefined && !RECENCY_VALUES.includes(recency)) {
+    throw new Error(`recency must be one of: ${RECENCY_VALUES.join(', ')}`);
   }
 
   // Build the messages array
   const messages = [
     {
       role: 'system',
-      content: systemContent
+      content: "You are a helpful assistant that searches the web to provide accurate, up-to-date information."
     },
     {
       role: 'user',
@@ -59,6 +59,7 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
   };
 
   // Add optional parameters if provided
+  if (recency !== undefined) apiRequest.search_recency_filter = recency;
   if (frequency_penalty !== undefined) apiRequest.frequency_penalty = frequency_penalty;
   if (max_tokens !== undefined) apiRequest.max_tokens = max_tokens;
   if (presence_penalty !== undefined) apiRequest.presence_penalty = presence_penalty;
