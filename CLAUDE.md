@@ -14,6 +14,7 @@ MCP server that connects Claude (Desktop/Code) to Perplexity AI's web search API
 
 ```bash
 npm run build        # Compile TypeScript → dist/
+npm test             # node --test against dist/ (build first)
 npm run start        # Run locally with .env
 npm publish          # Publish to npm (use GitHub release instead — triggers CI)
 npm audit            # Check for dependency vulnerabilities
@@ -43,7 +44,7 @@ Simple single-file server (`src/index.ts`):
 
 - **Server class (not McpServer)**: Uses the lower-level `Server` API. Works fine with SDK 1.x. Could migrate to `McpServer` + Zod schemas in a future refactor.
 - **node-fetch**: Used instead of native fetch for Node 18 compatibility.
-- **No tests**: Simple wrapper — tested manually via MCP client protocol. CI validates build + audit.
+- **Tests**: `npm test` (after `npm run build`) runs `node --test` on `tests/perplexity.test.mjs`: the pure request/response helpers in `src/perplexity.ts` plus a stdio `tools/list` smoke test, no API key or network. CI runs build + test + audit.
 - **Granular npm token** (not Trusted Publishing): npm doesn't support tokenless OIDC like PyPI. Token is scoped to this package only with 2FA bypass for CI.
 
 ## Supply Chain Security

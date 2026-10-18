@@ -9,6 +9,9 @@
 - `return_citations` is no longer sent to the API (Perplexity always returns sources); it controls whether the `Sources:` list is appended
 - A response without `choices[0].message.content` gives a clear error instead of a TypeError
 
+### Added
+- Tests (`npm test`, `node --test`) for the request builder, the response formatter and the tool schema over stdio, run in CI after the build
+
 ## [2.1.0] - 2026-03-24
 
 ### Security

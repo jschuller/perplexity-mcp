@@ -29,6 +29,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test
+        run: npm test
+
       - name: Security audit
         run: npm audit --omit=dev
         continue-on-error: true
