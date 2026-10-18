@@ -42,19 +42,27 @@ test('buildRequest passes optional parameters through only when given', () => {
   assert.equal('top_p' in body, false);
 });
 
-test('formatResponse appends top-level citations as Sources', () => {
-  const result = formatResponse(answer({ citations: ['https://a.example', 'https://b.example'] }), both);
+test('formatResponse lists search_results with titles as Sources', () => {
+  const result = formatResponse(
+    answer({
+      search_results: [{ title: 'A', url: 'https://a.example' }, { url: 'https://b.example' }],
+      citations: ['https://ignored.example']
+    }),
+    both
+  );
   assert.deepEqual(result, {
-    content: [{ type: 'text', text: 'Answer [1].\n\nSources:\n[1] https://a.example\n[2] https://b.example' }]
+    content: [{ type: 'text', text: 'Answer [1].\n\nSources:\n[1] A - https://a.example\n[2] https://b.example' }]
   });
 });
 
-test('formatResponse falls back to search_results', () => {
-  const { content } = formatResponse(
-    answer({ search_results: [{ title: 'A', url: 'https://a.example' }, { url: 'https://b.example' }] }),
-    both
-  );
-  assert.equal(content[0].text, 'Answer [1].\n\nSources:\n[1] A - https://a.example\n[2] https://b.example');
+test('formatResponse falls back to the deprecated citations', () => {
+  for (const extra of [{}, { search_results: [] }]) {
+    const { content } = formatResponse(
+      answer({ ...extra, citations: ['https://a.example', 'https://b.example'] }),
+      both
+    );
+    assert.equal(content[0].text, 'Answer [1].\n\nSources:\n[1] https://a.example\n[2] https://b.example');
+  }
 });
 
 test('formatResponse appends image URLs only when requested', () => {

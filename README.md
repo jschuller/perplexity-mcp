@@ -101,8 +101,8 @@ The answer comes back as one text block, with the sources and image URLs appende
 <answer with [1], [2] markers>
 
 Sources:
-[1] https://example.com/article
-[2] https://example.org/report
+[1] Article title - https://example.com/article
+[2] Report title - https://example.org/report
 ```
 
 ## Environment Variables

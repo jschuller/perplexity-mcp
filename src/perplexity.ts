@@ -74,15 +74,16 @@ export interface FormatOptions {
 }
 
 // Sources the answer's [1], [2] markers refer to. Perplexity returns them at the
-// top level: `citations` (URLs) or `search_results` ({ title, url, ... }).
+// top level: `search_results` ({ title, url, ... }), or the deprecated `citations`
+// (URLs only), used when there are no search results.
 function sources(result: any): string[] {
-  if (Array.isArray(result.citations) && result.citations.length > 0) {
-    return result.citations.filter((url: unknown) => typeof url === 'string');
-  }
-  if (Array.isArray(result.search_results)) {
+  if (Array.isArray(result.search_results) && result.search_results.length > 0) {
     return result.search_results
       .filter((r: any) => r && typeof r.url === 'string')
       .map((r: any) => (r.title ? `${r.title} - ${r.url}` : r.url));
+  }
+  if (Array.isArray(result.citations)) {
+    return result.citations.filter((url: unknown) => typeof url === 'string');
   }
   return [];
 }
