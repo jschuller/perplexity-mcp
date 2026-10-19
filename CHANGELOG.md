@@ -17,6 +17,7 @@ This release has breaking changes and should ship as **3.0.0**.
 - A response without `choices[0].message.content` gives a clear error instead of a TypeError
 
 ### Added
+- Requests to the Perplexity API send an `X-Pplx-Integration: perplexity-mcp` header so Perplexity can attribute traffic to this server
 - Tests (`npm test`, `node --test`) for the request builder, the response formatter and the tool schema over stdio, run in CI after the build
 
 ## [2.1.0] - 2026-03-24
