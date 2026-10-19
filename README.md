@@ -22,7 +22,7 @@
 
 This MCP server connects AI assistants to [Perplexity AI](https://www.perplexity.ai/)'s search API. Ask questions in natural language and get grounded, cited answers from the live web — directly inside Claude or any MCP-compatible client.
 
-**One tool, full control:** `perplexity_search_web` exposes the complete Perplexity API — recency filtering, model selection, temperature, top_k/top_p, citation/image toggles, and streaming.
+**One tool, full control:** `perplexity_search_web` exposes the complete Perplexity API — recency filtering, model selection, temperature, top_k/top_p, and citation/image toggles.
 
 ## Getting Started
 
@@ -84,7 +84,7 @@ Ask Claude: *"Search the web for the latest developments in quantum computing fr
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | **`query`** | string | *(required)* | Search query |
-| `recency` | `day` \| `week` \| `month` \| `year` | `month` | Filter results by time period |
+| `recency` | `hour` \| `day` \| `week` \| `month` \| `year` | — | Only search results from this period (sent as Perplexity's `search_recency_filter`); omit for no time limit |
 | `model` | string | `sonar` | Perplexity model ([model cards](https://docs.perplexity.ai/guides/model-cards)) |
 | `temperature` | number | — | Randomness (0 = deterministic, 2 = creative) |
 | `max_tokens` | integer | — | Maximum tokens to generate |
@@ -92,9 +92,18 @@ Ask Claude: *"Search the web for the latest developments in quantum computing fr
 | `top_p` | number | — | Nucleus sampling threshold |
 | `frequency_penalty` | number | — | Penalize repeated tokens |
 | `presence_penalty` | number | — | Encourage topic variety |
-| `return_citations` | boolean | `true` | Include source citations |
-| `return_images` | boolean | `false` | Include relevant images |
-| `stream` | boolean | `false` | Stream response incrementally |
+| `return_citations` | boolean | `true` | Append a `Sources:` list (the URLs behind the answer's `[1]`, `[2]` markers) |
+| `return_images` | boolean | `false` | Request images and append their URLs under `Images:` |
+
+The answer comes back as one text block, with the sources and image URLs appended:
+
+```
+<answer with [1], [2] markers>
+
+Sources:
+[1] Article title - https://example.com/article
+[2] Report title - https://example.org/report
+```
 
 ## Environment Variables
 
