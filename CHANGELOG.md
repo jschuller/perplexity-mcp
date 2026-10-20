@@ -8,6 +8,7 @@ This release has breaking changes and should ship as **3.0.0**.
 - **BREAKING:** `recency` has no default. It used to default to `month`, so every query was nudged toward the last month; omit it now for no time limit. It is sent as Perplexity's `search_recency_filter` instead of a hint in the system prompt, accepts `hour`, `day`, `week`, `month`, `year`, and rejects other values
 - **BREAKING:** sources and images are appended to the text content (a numbered `Sources:` list from the top-level `search_results`, falling back to the deprecated `citations`, and an `Images:` list when `return_images` is set) instead of being returned under `meta`
 - `return_citations` is no longer sent to the API (Perplexity always returns sources); it controls whether the `Sources:` list is appended
+- The publish workflow installs npm 11.21.0 instead of `npm@latest`, so a release never runs an npm version that came out the same day
 
 ### Removed
 - **BREAKING:** the `meta` field of the tool result, including `meta.model` and `meta.usage`, which clients did receive. Its `citations` and `images` were read from `choices[0].message`, where Perplexity does not put them, so they were always empty
