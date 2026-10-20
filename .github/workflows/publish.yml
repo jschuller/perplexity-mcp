@@ -4,28 +4,36 @@ on:
   release:
     types: [created]
 
+# Supply-chain baseline (homelab-governance, 2026-10-20): the workflow grants nothing and the job asks for exactly what it
+# needs; actions pinned by commit SHA; the checkout keeps no token; no cache is restored in this job, which holds the
+# publishing OIDC token; Node and npm by exact version; npm installs from the lockfile with install scripts off.
+permissions: {}
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
+      contents: read # the checkout
+      id-token: write # npm trusted publishing (OIDC) and the provenance statement
 
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
-          node-version: 20
+          persist-credentials: false
+
+      # setup-node v4.4.0 caches only when `cache:` is set (automatic caching came in v5), so nothing is restored here.
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0 # zizmor: ignore[cache-poisoning]
+        with:
+          node-version: "20.20.2" # exact (2026-03-24)
           registry-url: https://registry.npmjs.org
 
       - name: Update npm for Trusted Publishing
         # Exact version, at least two weeks old; trusted publishing needs npm 11.5.1 or newer.
-        run: npm install -g npm@11.21.0
+        run: npm install -g npm@11.21.0 # zizmor: ignore[adhoc-packages] the npm CLI itself, by exact version
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build
         run: npm run build
