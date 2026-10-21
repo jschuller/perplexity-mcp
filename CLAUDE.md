@@ -45,11 +45,11 @@ Simple single-file server (`src/index.ts`):
 - **Server class (not McpServer)**: Uses the lower-level `Server` API. Works fine with SDK 1.x. Could migrate to `McpServer` + Zod schemas in a future refactor.
 - **node-fetch**: Used instead of native fetch for Node 18 compatibility.
 - **Tests**: `npm test` (after `npm run build`) runs `node --test` on `tests/perplexity.test.mjs`: the pure request/response helpers in `src/perplexity.ts` plus a stdio `tools/list` smoke test, no API key or network. CI runs build + test + audit.
-- **Granular npm token** (not Trusted Publishing): npm doesn't support tokenless OIDC like PyPI. Token is scoped to this package only with 2FA bypass for CI.
+- **npm Trusted Publishing (OIDC)**: `publish.yml` publishes with the job's OIDC token and no npm token (the repository has no secrets); npm documents it as needing npm 11.5.1+ and Node 22.14.0+ (the workflow pins npm 11.21.0 and Node 22.23.3).
 
 ## Supply Chain Security
 
 - GitHub Actions SHA-pinned in all workflows
-- Renovate Bot configured for automated dependency updates (auto-merges patch/minor)
+- Dependabot version updates (`.github/dependabot.yml`): npm and GitHub Actions, weekly, after a 7-day cooldown (14 for an npm major); every update is a reviewed PR
 - npm publish includes `--provenance` for OIDC attestation
 - `SECURITY.md` with vulnerability disclosure process

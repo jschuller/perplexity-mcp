@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+- The publish workflow runs on Node 22.23.3 (LTS) instead of Node 20.20.2 (end of life), by exact version; npm documents trusted publishing as needing Node 22.14.0 or newer
+- Dependabot replaces Renovate (the Renovate app was never installed): weekly update PRs for npm and the GitHub Actions, each after a 7-day cooldown (14 for an npm major); nothing auto-merges
+
 ## [3.0.0] - 2026-10-20
 
 This release has breaking changes.
