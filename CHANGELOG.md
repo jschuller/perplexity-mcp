@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-This release has breaking changes and should ship as **3.0.0**.
+## [3.0.0] - 2026-10-20
+
+This release has breaking changes.
 
 ### Changed
 - **BREAKING:** `recency` has no default. It used to default to `month`, so every query was nudged toward the last month; omit it now for no time limit. It is sent as Perplexity's `search_recency_filter` instead of a hint in the system prompt, accepts `hour`, `day`, `week`, `month`, `year`, and rejects other values

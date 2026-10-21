@@ -18,7 +18,7 @@ const defaultModel = process.env.PERPLEXITY_MODEL || 'sonar';
 const server = new Server(
   {
     name: 'perplexity-mcp',
-    version: '2.1.1',
+    version: '3.0.0',
   },
   {
     capabilities: {
