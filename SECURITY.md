@@ -19,4 +19,4 @@ If you discover a security vulnerability, please report it via [GitHub Security 
 - API keys are read from environment variables only — never hardcoded or logged
 - The server communicates exclusively with `api.perplexity.ai` over HTTPS
 - No persistent data storage
-- Dependencies managed with lockfile pinning and automated updates via Renovate
+- Dependencies managed with lockfile pinning and automated updates via Dependabot (7-day cooldown)

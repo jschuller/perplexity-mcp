@@ -1,0 +1,15 @@
+# Dependabot version updates (homelab-governance supply-chain baseline, 2026-10-20). They replace renovate.json:
+# the Renovate app was never installed, so it opened no pull request here.
+# Every ecosystem waits out a cooldown: 7 days by default, 14 for a semver-major bump where the ecosystem supports
+# per-bump days (npm). github-actions keeps the SHA pins and their "# vX.Y.Z" comments up to date.
+# Nothing auto-merges: every update is a reviewed pull request.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7, semver-major-days: 14 }
