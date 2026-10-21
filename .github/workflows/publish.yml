@@ -2,7 +2,9 @@ name: Publish to npm
 
 on:
   release:
-    types: [created]
+    # published, not created: GitHub runs no workflow for a draft's created event, so a release saved as a draft
+    # first would never publish. A release created without a draft step also fires published, once.
+    types: [published]
 
 jobs:
   publish:

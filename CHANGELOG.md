@@ -18,6 +18,7 @@ This release has breaking changes.
 
 ### Fixed
 - A response without `choices[0].message.content` gives a clear error instead of a TypeError
+- The publish workflow runs when a release is published, not when it is created, so a release saved as a draft first still publishes to npm
 
 ### Added
 - Requests to the Perplexity API send an `X-Pplx-Integration: perplexity-mcp` header so Perplexity can attribute traffic to this server
