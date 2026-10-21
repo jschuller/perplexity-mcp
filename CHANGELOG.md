@@ -11,6 +11,7 @@ This release has breaking changes.
 - **BREAKING:** sources and images are appended to the text content (a numbered `Sources:` list from the top-level `search_results`, falling back to the deprecated `citations`, and an `Images:` list when `return_images` is set) instead of being returned under `meta`
 - `return_citations` is no longer sent to the API (Perplexity always returns sources); it controls whether the `Sources:` list is appended
 - The publish workflow installs npm 11.21.0 instead of `npm@latest`, so a release never runs an npm version that came out the same day
+- CI and the publish workflow install with `npm ci --ignore-scripts`, publish on Node 20.20.2 by exact version, pin every action by commit SHA, keep no token in the checkout and grant each job only what it needs; Renovate waits 7 days before proposing a release
 
 ### Removed
 - **BREAKING:** the `meta` field of the tool result, including `meta.model` and `meta.usage`, which clients did receive. Its `citations` and `images` were read from `choices[0].message`, where Perplexity does not put them, so they were always empty
