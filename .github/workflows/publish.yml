@@ -25,7 +25,7 @@ jobs:
 
       # setup-node v4.4.0 caches only when `cache:` is set (automatic caching came in v5), so nothing is restored here.
       - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0 # zizmor: ignore[cache-poisoning]
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v4.4.0 # zizmor: ignore[cache-poisoning]
         with:
           # Exact: the newest Node 22 LTS release at least 7 days old (22.23.3, 2026-09-23). npm documents trusted
           # publishing as needing Node 22.14.0 or newer; npm 11.21.0 supports Node ^20.17.0 || >=22.9.0.
