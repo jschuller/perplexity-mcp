@@ -33,18 +33,18 @@ Releases are automated via GitHub Actions:
 
 ## Architecture
 
-Simple single-file server (`src/index.ts`):
-- Lines 1-11: Imports + API key validation (exits if missing)
-- Lines 17-27: Server instance with MCP SDK `Server` class
-- Lines 30-108: `ListToolsRequestSchema` handler — defines the tool's JSON Schema
-- Lines 111-225: `CallToolRequestSchema` handler — builds Perplexity API request, calls API, formats response
-- Lines 228-232: Stdio transport connection
+- `src/index.ts`: API key check (exits if missing), the MCP `Server`, the tool's JSON Schema
+  (`tools/list`), the `tools/call` handler, and the stdio transport
+- `src/search.ts`: one search call: argument checks, the API request with a timeout
+  (`PERPLEXITY_TIMEOUT_MS`, default 60 s), and every failure returned as a tool result with
+  `isError: true`; `fetch` is injected so tests mock it
+- `src/perplexity.ts`: pure helpers that build the request body and format the response
 
 ## Key Decisions
 
 - **Server class (not McpServer)**: Uses the lower-level `Server` API. Works fine with SDK 1.x. Could migrate to `McpServer` + Zod schemas in a future refactor.
 - **node-fetch**: Used instead of native fetch for Node 18 compatibility.
-- **Tests**: `npm test` (after `npm run build`) runs `node --test` on `tests/perplexity.test.mjs`: the pure request/response helpers in `src/perplexity.ts` plus a stdio `tools/list` smoke test, no API key or network. CI runs build + test + audit.
+- **Tests**: `npm test` (after `npm run build`) runs `node --test` on `tests/perplexity.test.mjs` (the pure request/response helpers in `src/perplexity.ts` plus stdio `tools/list` and `tools/call` smoke tests) and `tests/search.test.mjs` (`src/search.ts` with a mocked fetch: errors, timeouts, bad responses); no API key or network. CI runs build + test + audit.
 - **npm Trusted Publishing (OIDC)**: `publish.yml` publishes with the job's OIDC token and no npm token (the repository has no secrets); npm documents it as needing npm 11.5.1+ and Node 22.14.0+ (the workflow pins npm 11.21.0 and Node 22.23.3).
 
 ## Supply Chain Security

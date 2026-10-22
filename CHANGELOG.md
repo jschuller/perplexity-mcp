@@ -3,8 +3,16 @@
 ## [Unreleased]
 
 ### Changed
+- **Result text format change** (for clients that parse the text): results are marked as untrusted web content. The text starts with a notice that it is data, not instructions, and the answer, sources and image URLs follow between `<untrusted_web_content id="...">` and `</untrusted_web_content id="...">`, with a random id for each result. Web text cannot produce the closing tag for its own block, because it cannot know the id. Otherwise the text is unchanged, except that Unicode Tags-block characters and bidi controls are removed and our tag written as ASCII markup is replaced with `[removed tag]`. Error results wrap any part of Perplexity's response body the same way. The tool description says the results are untrusted
+- The README's Claude Code quickstart passes the key with `claude mcp add perplexity -e PERPLEXITY_API_KEY=... -- npx -y @jschuller/perplexity-mcp`. The old `export` step only worked if Claude Code was started from that same shell
+- CI audits at `--audit-level=high`. The step stays non-blocking for now: on main the runtime tree has high and critical advisories (`@modelcontextprotocol/sdk` <=1.31.0 and its transitive `proxy-addr`, `fast-uri`, `hono`, `ip-address`, `path-to-regexp`), fixed by a pending Dependabot update; a TODO in `ci.yml` marks where to make it blocking
+- Tool failures are returned as a tool result with `isError: true` and a short explanation (API errors with the status and a hint for 401/403, 429 and 5xx, timeouts, network errors, a body that is not JSON, a response without content, bad arguments), instead of being thrown as MCP protocol errors, so the calling model sees what went wrong. An API key with a space, tab or line break gets its own hint. An unknown tool name is still a protocol error
 - The publish workflow runs on Node 22.23.3 (LTS) instead of Node 20.20.2 (end of life), by exact version; npm documents trusted publishing as needing Node 22.14.0 or newer
 - Dependabot replaces Renovate (the Renovate app was never installed): weekly update PRs for npm and the GitHub Actions, each after a 7-day cooldown (14 for an npm major); nothing auto-merges
+- An unknown tool name is rejected with an MCP `InvalidParams` error (-32602) instead of an internal error
+
+### Added
+- A timeout on each Perplexity request, including reading the response: 60 seconds by default, set with `PERPLEXITY_TIMEOUT_MS` (whole milliseconds from 1 to 2147483647; another value gives the default and a warning on stderr). A stalled connection no longer hangs the tool call
 
 ## [3.0.0] - 2026-10-20
 

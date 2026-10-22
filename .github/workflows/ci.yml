@@ -42,8 +42,13 @@ jobs:
       - name: Test
         run: npm test
 
+      # TODO(2026-10-21): make this blocking (drop continue-on-error) once the lockfile is clean. On main,
+      # `npm audit --omit=dev --audit-level=high` fails: @modelcontextprotocol/sdk <=1.31.0 (direct, high) and, through
+      # it, proxy-addr (critical), fast-uri, hono, ip-address and path-to-regexp (high). The fixes are in Dependabot
+      # PR #18 (npm_and_yarn group, opened 2026-10-21; sdk 1.32.0 and the others), not merged yet. Blocking now would turn
+      # every CI run red.
       - name: Security audit
-        run: npm audit --omit=dev
+        run: npm audit --omit=dev --audit-level=high
         continue-on-error: true
 
   zizmor:
