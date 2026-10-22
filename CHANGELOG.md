@@ -6,6 +6,7 @@
 - A timeout on each Perplexity request, including reading the response: 60 seconds by default, set with `PERPLEXITY_TIMEOUT_MS`. A stalled connection no longer hangs the tool call
 
 ### Changed
+- The README's Claude Code quickstart passes the key with `claude mcp add perplexity -e PERPLEXITY_API_KEY=... -- npx -y @jschuller/perplexity-mcp`. The old `export` step only worked if Claude Code was started from that same shell
 - CI audits at `--audit-level=high`. The step stays non-blocking for now: on main the runtime tree has high and critical advisories (`@modelcontextprotocol/sdk` <=1.31.0 and its transitive `proxy-addr`, `fast-uri`, `hono`, `ip-address`, `path-to-regexp`), fixed by a pending Dependabot update; a TODO in `ci.yml` marks where to make it blocking
 - Results are marked as untrusted web content: the text starts with a notice that it is data, not instructions, and the answer, sources and image URLs follow inside `<untrusted_web_content source="perplexity">` tags. The tags are removed from the web text itself, so a page cannot close the block. The tool description says the same. Clients that parse the text exactly need to allow for the wrapper
 - Tool failures are returned as a tool result with `isError: true` and a short explanation (API errors with the status and a hint for 401/403, 429 and 5xx, timeouts, network errors, a body that is not JSON, a response without content, bad arguments), instead of being thrown as MCP protocol errors, so the calling model sees what went wrong. An unknown tool name is still a protocol error

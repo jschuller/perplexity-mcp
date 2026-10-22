@@ -35,13 +35,16 @@ Sign up at [perplexity.ai](https://www.perplexity.ai/) and generate an API key f
 #### Claude Code (Recommended)
 
 ```bash
-claude mcp add perplexity -- npx -y @jschuller/perplexity-mcp
+claude mcp add perplexity -e PERPLEXITY_API_KEY=pplx-your-key-here -- npx -y @jschuller/perplexity-mcp
 ```
 
-Then set your API key:
-```bash
-export PERPLEXITY_API_KEY=pplx-your-key-here
-```
+Replace `pplx-your-key-here` with your key. `-e` saves it in the server's Claude Code config
+(local scope by default; see `claude mcp add --help`), so the server gets it however Claude Code
+is started. Put the server name before `-e`, and keep the `--` before `npx`.
+
+To keep the key out of the config instead, leave out `-e ...` and export the key in the shell
+you start `claude` from (`export PERPLEXITY_API_KEY=...`); a key exported in another shell does
+not reach the server.
 
 #### Claude Desktop
 
