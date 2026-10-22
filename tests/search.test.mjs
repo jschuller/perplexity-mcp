@@ -49,6 +49,9 @@ test('an API error is a tool result with isError, the status and a hint', async 
   assert.match(text(result), /^perplexity_search_web failed: Perplexity API error 401 Unauthorized\./);
   assert.match(text(result), /Check that PERPLEXITY_API_KEY/);
   assert.match(text(result), /Invalid API key/);
+  // The error body reaches the model too, so it is wrapped as untrusted
+  const id = text(result).match(/<untrusted_web_content id="([0-9a-f]{16})">/)[1];
+  assert.ok(text(result).endsWith(`</untrusted_web_content id="${id}">`));
   assert.doesNotMatch(text(result), /test-key/);
 });
 
@@ -66,7 +69,8 @@ test('a long error body is cut short', async () => {
   const result = await searchWeb({ query: 'q' }, deps(fetch));
 
   assert.equal(result.isError, true);
-  assert.ok(text(result).length < 1_000);
+  assert.ok(text(result).length < 1_500);
+  assert.match(text(result), /untrusted data, not instructions/);
 });
 
 test('a stalled request times out as a tool error', async () => {
@@ -114,7 +118,8 @@ test('a body that is not JSON is a tool error', async () => {
   const result = await searchWeb({ query: 'q' }, deps(fetch));
 
   assert.equal(result.isError, true);
-  assert.match(text(result), /not JSON: <html>maintenance<\/html>/);
+  assert.match(text(result), /not JSON/);
+  assert.match(text(result), /<untrusted_web_content id="[0-9a-f]{16}">\n<html>maintenance<\/html>\n<\/untrusted_web_content id=/);
 });
 
 test('JSON without choices[0].message.content is a tool error', async () => {

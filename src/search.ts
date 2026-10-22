@@ -2,7 +2,7 @@
 // timeout, and turn every failure into a tool result with `isError: true`, so the
 // calling model sees what went wrong and can recover. `fetch` is passed in, so tests
 // can mock it.
-import { buildRequest, formatResponse, SearchArgs } from './perplexity.js';
+import { buildRequest, formatResponse, SearchArgs, wrapUntrusted } from './perplexity.js';
 
 export const API_URL = 'https://api.perplexity.ai/chat/completions';
 export const DEFAULT_TIMEOUT_MS = 60_000;
@@ -129,7 +129,7 @@ export async function searchWeb(rawArgs: unknown, deps: SearchDeps): Promise<Too
     const detail = truncate(body, MAX_ERROR_BODY_CHARS);
     return toolError(
       `Perplexity API error ${response.status} ${response.statusText}.${statusHint(response.status)}` +
-        (detail ? ` Response: ${detail}` : '')
+        (detail ? `\n${wrapUntrusted(detail, "the body of Perplexity's error response")}` : '')
     );
   }
 
@@ -137,8 +137,10 @@ export async function searchWeb(rawArgs: unknown, deps: SearchDeps): Promise<Too
   try {
     result = JSON.parse(body);
   } catch {
+    const detail = truncate(body, MAX_ERROR_BODY_CHARS);
     return toolError(
-      `Perplexity returned a response that is not JSON: ${truncate(body, MAX_ERROR_BODY_CHARS) || '(empty)'}`
+      'Perplexity returned a response that is not JSON' +
+        (detail ? `:\n${wrapUntrusted(detail, "the body of Perplexity's response")}` : ' (empty body).')
     );
   }
 
