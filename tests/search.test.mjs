@@ -188,3 +188,14 @@ test('with the real node-fetch, a server that never answers times out', async ()
     await new Promise((resolve) => server.close(resolve));
   }
 });
+
+test('an API key with a line break gets its own hint, not "could not reach"', async () => {
+  const { default: nodeFetch } = await import('node-fetch');
+  // node-fetch rejects the header before connecting; the local URL is never reached
+  const fetch = (_, init) => nodeFetch('http://127.0.0.1:9/', init);
+  const result = await searchWeb({ query: 'q' }, { ...deps(fetch), apiKey: 'pplx-key\n' });
+
+  assert.equal(result.isError, true);
+  assert.match(text(result), /Check PERPLEXITY_API_KEY for spaces, tabs or line breaks/);
+  assert.doesNotMatch(text(result), /could not reach/);
+});

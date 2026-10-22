@@ -61,6 +61,13 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+// Node's http layer (used by node-fetch) and undici reject a header value with a
+// newline or other control character before any request is sent
+function isInvalidHeader(error: unknown): boolean {
+  const { code, message } = (error ?? {}) as { code?: unknown; message?: unknown };
+  return code === 'ERR_INVALID_CHAR' || (typeof message === 'string' && /invalid character in header/i.test(message));
+}
+
 function timeoutError(timeoutMs: number): ToolResult {
   return toolError(
     `Perplexity did not answer within ${timeoutMs / 1000} s. Try again, or ask a narrower question. ` +
@@ -117,6 +124,12 @@ export async function searchWeb(rawArgs: unknown, deps: SearchDeps): Promise<Too
     // Only our timer aborts, so an aborted signal means a timeout (native fetch and
     // node-fetch reject with different abort errors)
     if (signal.aborted) return timeoutError(deps.timeoutMs);
+    if (isInvalidHeader(error)) {
+      return toolError(
+        'the API key cannot be sent as an HTTP header (it contains a character a header cannot hold). ' +
+          'Check PERPLEXITY_API_KEY for spaces, tabs or line breaks, for example a trailing newline.'
+      );
+    }
     return toolError(
       `could not reach the Perplexity API (${errorMessage(error)}). ` +
         'Check the network connection and https://status.perplexity.ai/.'

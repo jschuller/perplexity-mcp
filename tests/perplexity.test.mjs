@@ -214,3 +214,22 @@ test('server returns bad arguments as a tool error, not a protocol error', async
     await client.close();
   }
 });
+
+test('server rejects an unknown tool with InvalidParams', async () => {
+  const transport = new StdioClientTransport({
+    command: process.execPath,
+    args: [fileURLToPath(new URL('../dist/index.js', import.meta.url))],
+    env: { PATH: process.env.PATH ?? '', PERPLEXITY_API_KEY: 'test-key-not-used' }
+  });
+  const client = new Client({ name: 'test', version: '0.0.0' });
+  await client.connect(transport);
+  try {
+    await assert.rejects(client.callTool({ name: 'no_such_tool', arguments: {} }), (error) => {
+      assert.equal(error.code, -32602);
+      assert.match(error.message, /Unknown tool: no_such_tool/);
+      return true;
+    });
+  } finally {
+    await client.close();
+  }
+});
