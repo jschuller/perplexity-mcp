@@ -114,10 +114,12 @@ Sources:
 ```
 
 What this guarantees: web text cannot produce the closing tag for its own block, because it
-cannot know the id (8 random bytes per result). The web text is also NFKC-normalized (so
-compatibility characters such as `²` become `2`), format characters such as zero-width
-spaces and soft hyphens are removed, and any spelling of the tag name is replaced with
-`[removed tag]`. Whether the calling model respects the boundary is up to the model.
+cannot know the id (8 random bytes per result). Otherwise the text is passed through as
+Perplexity returned it, with two exceptions: characters from the Unicode Tags block
+(U+E0000-E007F, invisible "ASCII smuggling") and bidi controls (U+202A-202E, U+2066-2069)
+are removed, and our tag written as ASCII markup (`<untrusted_web_content ...>` or
+`</untrusted-web-content>`, any case) is replaced with `[removed tag]`. Formulas, emoji, ZWNJ
+and URLs are not changed. Whether the calling model respects the boundary is up to the model.
 
 If the search fails (API error, timeout, unreadable response, bad arguments), the result has
 `isError: true` and one text block that says what went wrong. Any part of Perplexity's

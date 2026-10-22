@@ -75,14 +75,18 @@ export function buildRequest(args: SearchArgs, defaultModel: string): Record<str
 // random id, and only a closing tag with that id ends the block, so web text cannot
 // end it with a closing tag it guessed or copied from an earlier result.
 export const UNTRUSTED_TAG = 'untrusted_web_content';
-// Any spelling of the tag name (case, spaces, "_" or "-"), after NFKC
-const TAG_NAME = /untrusted[\s_\-]*web[\s_\-]*content/gi;
+// Our tag as written in ASCII markup, any case, through its closing ">" when one
+// follows on the same line. The plain words "untrusted web content" are left alone.
+const TAG_TOKEN = /<\s*\/?\s*untrusted[_-]web[_-]content(?:[^<>\n]{0,100}>)?/gi;
+// The Unicode Tags block (invisible ASCII smuggling) and the bidi embedding,
+// override and isolate controls. Everything else is passed through unchanged.
+const HIDDEN = /[\u{E0000}-\u{E007F}\u202A-\u202E\u2066-\u2069]/gu;
 
-// NFKC turns lookalikes such as fullwidth or small-form brackets into plain ones;
-// format characters (zero-width, soft hyphen, bidi controls) are removed, then every
-// spelling of the tag name. NFKC also folds compatibility characters (² becomes 2).
+// The random id is the boundary; this only removes what can hide text or mimic our
+// tag. Content is otherwise unchanged (no Unicode normalization), so formulas,
+// ZWNJ and emoji sequences, and URLs survive as Perplexity returned them.
 export function sanitizeUntrusted(text: string): string {
-  return text.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(TAG_NAME, '[removed tag]');
+  return text.replace(HIDDEN, '').replace(TAG_TOKEN, '[removed tag]');
 }
 
 // `what` says what the text is, for the notice

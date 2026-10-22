@@ -1,6 +1,6 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema, McpError } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ErrorCode, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import fetch from 'node-fetch';
 import { RECENCY_VALUES } from './perplexity.js';
 import { searchWeb, timeoutFromEnv } from './search.js';
@@ -102,7 +102,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name !== 'perplexity_search_web') {
-    throw new McpError(ErrorCode.InvalidParams, `Unknown tool: ${request.params.name}`);
+    // A plain message: McpError would add an "MCP error -32602:" prefix that the client adds again
+    throw Object.assign(new Error(`Unknown tool: ${request.params.name}`), { code: ErrorCode.InvalidParams });
   }
 
   // Failures come back as a tool result with isError: true, not as a protocol error
