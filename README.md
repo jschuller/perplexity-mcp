@@ -111,6 +111,7 @@ Sources:
 |---|---|---|---|
 | `PERPLEXITY_API_KEY` | Yes | — | Your Perplexity API key |
 | `PERPLEXITY_MODEL` | No | `sonar` | Default model for all queries |
+| `PERPLEXITY_TIMEOUT_MS` | No | `60000` | How long one search may take, in milliseconds, before it fails with a timeout |
 
 ## Available Models
 
@@ -132,7 +133,7 @@ Sources:
 | `PERPLEXITY_API_KEY is required` | Set the env var in your MCP client config or shell |
 | `400 invalid_request_error` | Update to v2.1.0+ (fixes JSON Schema validation with Claude Code) |
 | Server not found | Verify `npx @jschuller/perplexity-mcp` runs without error |
-| Connection timeout | Check internet connectivity and [Perplexity API status](https://status.perplexity.ai/) |
+| `did not answer within 60 s` | Check internet connectivity and [Perplexity API status](https://status.perplexity.ai/); raise `PERPLEXITY_TIMEOUT_MS` for slow models |
 
 ## Contributing
 

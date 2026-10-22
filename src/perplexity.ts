@@ -119,7 +119,7 @@ export function formatResponse(result: any, options: FormatOptions) {
   return {
     content: [
       {
-        type: 'text',
+        type: 'text' as const,
         text
       }
     ]

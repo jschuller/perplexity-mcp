@@ -10,7 +10,7 @@
   "scripts": {
     "start": "tsx --env-file .env src/index.ts",
     "build": "tsc --build",
-    "test": "node --test tests/perplexity.test.mjs",
+    "test": "node --test tests/perplexity.test.mjs tests/search.test.mjs",
     "prepublish": "npm run build"
   },
   "repository": {

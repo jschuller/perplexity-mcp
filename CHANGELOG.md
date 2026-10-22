@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+- A timeout on each Perplexity request, including reading the response: 60 seconds by default, set with `PERPLEXITY_TIMEOUT_MS`. A stalled connection no longer hangs the tool call
+
 ### Changed
+- Tool failures are returned as a tool result with `isError: true` and a short explanation (API errors with the status and a hint for 401/403, 429 and 5xx, timeouts, network errors, a body that is not JSON, a response without content, bad arguments), instead of being thrown as MCP protocol errors, so the calling model sees what went wrong. An unknown tool name is still a protocol error
 - The publish workflow runs on Node 22.23.3 (LTS) instead of Node 20.20.2 (end of life), by exact version; npm documents trusted publishing as needing Node 22.14.0 or newer
 - Dependabot replaces Renovate (the Renovate app was never installed): weekly update PRs for npm and the GitHub Actions, each after a 7-day cooldown (14 for an npm major); nothing auto-merges
 

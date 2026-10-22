@@ -108,3 +108,21 @@ test('server lists the tool without stream or a recency default', async () => {
     await client.close();
   }
 });
+
+test('server returns bad arguments as a tool error, not a protocol error', async () => {
+  const transport = new StdioClientTransport({
+    command: process.execPath,
+    args: [fileURLToPath(new URL('../dist/index.js', import.meta.url))],
+    env: { PATH: process.env.PATH ?? '', PERPLEXITY_API_KEY: 'test-key-not-used' }
+  });
+  const client = new Client({ name: 'test', version: '0.0.0' });
+  await client.connect(transport);
+  try {
+    // Rejected before any request, so no network is used
+    const result = await client.callTool({ name: 'perplexity_search_web', arguments: { query: 'q', recency: 'decade' } });
+    assert.equal(result.isError, true);
+    assert.match(result.content[0].text, /recency must be one of/);
+  } finally {
+    await client.close();
+  }
+});
