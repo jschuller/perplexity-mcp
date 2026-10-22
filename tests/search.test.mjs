@@ -1,7 +1,7 @@
 // Run with `npm test` after `npm run build`. fetch is mocked: no API key or network needed.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { API_URL, DEFAULT_TIMEOUT_MS, searchWeb, timeoutFromEnv } from '../dist/search.js';
+import { API_URL, DEFAULT_TIMEOUT_MS, MAX_TIMEOUT_MS, searchWeb, timeoutFromEnv } from '../dist/search.js';
 
 const OK_BODY = JSON.stringify({ choices: [{ message: { content: 'Answer [1].' } }], citations: ['https://a.example'] });
 
@@ -134,12 +134,35 @@ test('bad arguments are tool errors and make no request', async () => {
   }
 });
 
-test('PERPLEXITY_TIMEOUT_MS sets the timeout; bad values give the 60 s default', () => {
+test('PERPLEXITY_TIMEOUT_MS sets the timeout from 1 to 2147483647 ms', () => {
+  const warnings = [];
+  const parse = (value) => timeoutFromEnv(value, (m) => warnings.push(m));
   assert.equal(DEFAULT_TIMEOUT_MS, 60_000);
-  assert.equal(timeoutFromEnv(undefined), 60_000);
-  assert.equal(timeoutFromEnv(''), 60_000);
-  assert.equal(timeoutFromEnv('15000'), 15_000);
-  for (const bad of ['0', '-5', 'abc', '1.5']) assert.equal(timeoutFromEnv(bad), 60_000, bad);
+  assert.equal(MAX_TIMEOUT_MS, 2_147_483_647);
+  assert.equal(parse(undefined), 60_000);
+  assert.equal(parse(''), 60_000);
+  assert.equal(parse('15000'), 15_000);
+  assert.equal(parse('1'), 1);
+  assert.equal(parse('2147483647'), 2_147_483_647);
+  assert.deepEqual(warnings, []);
+});
+
+test('bad PERPLEXITY_TIMEOUT_MS values give the 60 s default and a warning', () => {
+  for (const bad of ['0', '-5', 'abc', '1.5', '2147483648', '3000000000', '99999999999', '1e300']) {
+    const warnings = [];
+    assert.equal(timeoutFromEnv(bad, (m) => warnings.push(m)), 60_000, bad);
+    assert.equal(warnings.length, 1, bad);
+    assert.match(warnings[0], /PERPLEXITY_TIMEOUT_MS must be a whole number of milliseconds from 1 to 2147483647/);
+  }
+});
+
+test('the largest timeout is accepted by setTimeout and a finished call leaves no timer', async () => {
+  const timers = () => process.getActiveResourcesInfo().filter((r) => r === 'Timeout').length;
+  const before = timers();
+  const { fetch } = mockFetch(() => reply(200, OK_BODY));
+  const result = await searchWeb({ query: 'q' }, deps(fetch, { timeoutMs: MAX_TIMEOUT_MS }));
+  assert.equal(result.isError, undefined);
+  assert.equal(timers(), before);
 });
 
 test('with the real node-fetch, a server that never answers times out', async () => {

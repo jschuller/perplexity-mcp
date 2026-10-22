@@ -6,6 +6,8 @@ import { buildRequest, formatResponse, SearchArgs } from './perplexity.js';
 
 export const API_URL = 'https://api.perplexity.ai/chat/completions';
 export const DEFAULT_TIMEOUT_MS = 60_000;
+// Largest delay setTimeout accepts (2^31 - 1 ms, about 24.8 days)
+export const MAX_TIMEOUT_MS = 2_147_483_647;
 
 // Longest part of an API error body that goes into the error text
 const MAX_ERROR_BODY_CHARS = 500;
@@ -35,11 +37,20 @@ export interface ToolResult {
   isError?: boolean;
 }
 
-// PERPLEXITY_TIMEOUT_MS: a whole number of milliseconds > 0; anything else gives the default
-export function timeoutFromEnv(value: string | undefined): number {
+// PERPLEXITY_TIMEOUT_MS: a whole number of milliseconds from 1 to MAX_TIMEOUT_MS. Anything
+// else gives the default and a warning on stderr (stdout carries the MCP protocol).
+export function timeoutFromEnv(
+  value: string | undefined,
+  warn: (message: string) => void = (message) => process.stderr.write(message)
+): number {
   if (value === undefined || value.trim() === '') return DEFAULT_TIMEOUT_MS;
   const ms = Number(value);
-  return Number.isInteger(ms) && ms > 0 ? ms : DEFAULT_TIMEOUT_MS;
+  if (Number.isInteger(ms) && ms >= 1 && ms <= MAX_TIMEOUT_MS) return ms;
+  warn(
+    `Warning: PERPLEXITY_TIMEOUT_MS must be a whole number of milliseconds from 1 to ${MAX_TIMEOUT_MS}; ` +
+      `using the default ${DEFAULT_TIMEOUT_MS}.\n`
+  );
+  return DEFAULT_TIMEOUT_MS;
 }
 
 export function toolError(message: string): ToolResult {
@@ -48,13 +59,6 @@ export function toolError(message: string): ToolResult {
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
-}
-
-// We abort only through the timeout signal. Native fetch rejects with the signal's
-// reason (a TimeoutError); node-fetch rejects with its own AbortError.
-function isTimeout(error: unknown): boolean {
-  const name = (error as { name?: unknown } | null)?.name;
-  return name === 'TimeoutError' || name === 'AbortError';
 }
 
 function timeoutError(timeoutMs: number): ToolResult {
@@ -89,8 +93,12 @@ export async function searchWeb(rawArgs: unknown, deps: SearchDeps): Promise<Too
     return toolError(errorMessage(error));
   }
 
-  // One signal covers the request and reading the body
-  const signal = AbortSignal.timeout(deps.timeoutMs);
+  // One timer covers the request and reading the body. A plain setTimeout (not
+  // AbortSignal.timeout, whose timer is unref'd) keeps the process alive while a call
+  // is pending, and is cleared when the call ends.
+  const controller = new AbortController();
+  const signal = controller.signal;
+  const timer = setTimeout(() => controller.abort(), deps.timeoutMs);
   let response: FetchResponse;
   let body: string;
   try {
@@ -106,11 +114,15 @@ export async function searchWeb(rawArgs: unknown, deps: SearchDeps): Promise<Too
     });
     body = await response.text();
   } catch (error) {
-    if (isTimeout(error) || signal.aborted) return timeoutError(deps.timeoutMs);
+    // Only our timer aborts, so an aborted signal means a timeout (native fetch and
+    // node-fetch reject with different abort errors)
+    if (signal.aborted) return timeoutError(deps.timeoutMs);
     return toolError(
       `could not reach the Perplexity API (${errorMessage(error)}). ` +
         'Check the network connection and https://status.perplexity.ai/.'
     );
+  } finally {
+    clearTimeout(timer);
   }
 
   if (!response.ok) {

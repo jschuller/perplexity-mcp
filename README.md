@@ -123,7 +123,7 @@ If the search fails (API error, timeout, unreadable response, bad arguments), th
 |---|---|---|---|
 | `PERPLEXITY_API_KEY` | Yes | — | Your Perplexity API key |
 | `PERPLEXITY_MODEL` | No | `sonar` | Default model for all queries |
-| `PERPLEXITY_TIMEOUT_MS` | No | `60000` | How long one search may take, in milliseconds, before it fails with a timeout |
+| `PERPLEXITY_TIMEOUT_MS` | No | `60000` | How long one search may take, in milliseconds (1 to 2147483647), before it fails with a timeout |
 
 ## Available Models
 

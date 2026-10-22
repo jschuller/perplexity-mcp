@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Added
-- A timeout on each Perplexity request, including reading the response: 60 seconds by default, set with `PERPLEXITY_TIMEOUT_MS`. A stalled connection no longer hangs the tool call
+- A timeout on each Perplexity request, including reading the response: 60 seconds by default, set with `PERPLEXITY_TIMEOUT_MS` (whole milliseconds from 1 to 2147483647; another value gives the default and a warning on stderr). A stalled connection no longer hangs the tool call
 
 ### Changed
 - The README's Claude Code quickstart passes the key with `claude mcp add perplexity -e PERPLEXITY_API_KEY=... -- npx -y @jschuller/perplexity-mcp`. The old `export` step only worked if Claude Code was started from that same shell
